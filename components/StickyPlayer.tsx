@@ -153,7 +153,7 @@ export default function StickyPlayer() {
           >
             {isPlaying ? (
               <Image
-                source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/PausaV2.png' }}
+                source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/PausaV3.png' }}
                 style={{ width: 21, height: 21 }}
                 resizeMode="contain"
                 accessibilityIgnoresInvertColors
