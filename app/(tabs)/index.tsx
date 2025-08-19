@@ -433,7 +433,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
   const prevColor = useMemo(() => darkenColor(prevBaseColor, 0.5), [prevBaseColor, darkenColor]);
   const currColor = useMemo(() => darkenColor(currBaseColor, 0.5), [currBaseColor, darkenColor]);
 
-  const upShift = (!previous && changeDirection === 'none') ? 0 : -offsetUp;
+  const upShift = (previous && changeDirection !== 'none') ? -offsetUp : 0;
   const leftShift = offsetLeft;
 
   return visible ? (
