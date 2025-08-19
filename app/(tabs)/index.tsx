@@ -433,7 +433,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
   const prevColor = useMemo(() => darkenColor(prevBaseColor, 0.5), [prevBaseColor, darkenColor]);
   const currColor = useMemo(() => darkenColor(currBaseColor, 0.5), [currBaseColor, darkenColor]);
 
-  const upShift = (previous && changeDirection !== 'none') ? -offsetUp : 0;
+  const upShift = 0;
   const leftShift = offsetLeft;
 
   return visible ? (
@@ -474,7 +474,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
           <View style={styles.grabber} />
         </View>
         <View style={styles.sheetContent} testID="player-swipe-zone" accessible accessibilityLabel="Swipe zone">
-          <View style={[styles.centerZone, (!previous && changeDirection === 'none') ? { paddingTop: Math.floor(sheetHeight * 0.06) } : null]}>
+          <View style={[styles.centerZone, (changeDirection === 'none') ? { paddingTop: Math.floor(sheetHeight * 0.06) } : null]}>
             <View
               {...coverSwipeResponder.panHandlers}
               style={[styles.centerBlock, { transform: [{ translateY: upShift }, { translateX: leftShift }] }]} 
