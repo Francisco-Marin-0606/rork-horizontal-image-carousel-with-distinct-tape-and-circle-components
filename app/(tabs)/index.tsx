@@ -34,12 +34,16 @@ const instrumentalData: AlbumData[] = [
   { id: "4", title: "Magnético", subtitle: "No atraes lo que quieres, atraes lo que eres.", color: "#f59e0b", audioUrl: "https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/aura/audios/AURA/Relax/TRACK6.mp3" },
   { id: "5", title: "Del cielo al mar", subtitle: "Aquí va un copy increíble que va a escribir Juan.", color: "#ef4444", audioUrl: "https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/aura/audios/AURA/Relax/TRACK5.mp3" },
   { id: "6", title: "Energía pura", subtitle: "Aquí va un copy increíble que va a escribir Juan.", color: "#06b6d4", audioUrl: "https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/aura/audios/AURA/Relax/TRACK4.mp3" },
+  { id: "10", title: "Brisa Dorada", subtitle: "Instrumental cálido para fluir.", color: "#F97316", audioUrl: "https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/aura/audios/AURA/Relax/TRACK3.mp3" },
+  { id: "11", title: "Horizonte", subtitle: "Texturas que inspiran foco.", color: "#22D3EE", audioUrl: "https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/aura/audios/AURA/Relax/TRACK2.mp3" },
 ];
 
 const extraData: AlbumData[] = [
   { id: "7", title: "Frecuencias Alfa", subtitle: "Relaja y enfoca tu mente.", color: "#10b981", audioUrl: "https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/aura/audios/AURA/Relax/TRACK3.mp3" },
   { id: "8", title: "Frecuencias Beta", subtitle: "Energía y claridad mental.", color: "#3b82f6", audioUrl: "https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/aura/audios/AURA/Relax/TRACK10.mp3" },
   { id: "9", title: "Frecuencias Theta", subtitle: "Profunda introspección.", color: "#ec4899", audioUrl: "https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/aura/audios/AURA/Relax/TRACK1.mp3" },
+  { id: "12", title: "Frecuencias Delta", subtitle: "Sueño profundo y reparación.", color: "#6366F1", audioUrl: "https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/aura/audios/AURA/Relax/TRACK9.mp3" },
+  { id: "13", title: "Frecuencias Gamma", subtitle: "Claridad y creatividad elevada.", color: "#F43F5E", audioUrl: "https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/aura/audios/AURA/Relax/TRACK8.mp3" },
 ];
 
 type AlbumCardProps = { album: AlbumData; imageSize: number; onPress?: (a: AlbumData) => void };
