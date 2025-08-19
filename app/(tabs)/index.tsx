@@ -199,6 +199,9 @@ const CarouselSection: React.FC<{ title: string; data: AlbumData[]; imageSize: n
         snapToOffsets={snapOffsets}
         snapToAlignment="start"
         decelerationRate="fast"
+        bounces={false}
+        alwaysBounceHorizontal={false}
+        overScrollMode="never"
         testID={`carousel-${title}`}
       >
         {data.map((album) => (
