@@ -242,6 +242,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
   const initialFade = useRef(new Animated.Value(0)).current;
   const [textKey, setTextKey] = useState<number>(0);
   const didAutoPlayRef = useRef<boolean>(false);
+  const [justOpened, setJustOpened] = useState<boolean>(false);
   useEffect(() => {
     if (!album) return;
     setTextKey((k) => k + 1);
@@ -256,11 +257,15 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
 
   const open = useCallback(() => {
     const smooth = Easing.bezier(0.22, 1, 0.36, 1);
+    setJustOpened(true);
     Animated.parallel([
       Animated.timing(translateY, { toValue: 0, duration: Math.floor(1229 * 0.7), easing: smooth, useNativeDriver: true }),
       Animated.timing(backdrop, { toValue: 1, duration: Math.floor(1065 * 0.7), easing: smooth, useNativeDriver: true }),
       Animated.timing(contentOpacity, { toValue: 0, duration: Math.floor(1106 * 0.7), easing: smooth, useNativeDriver: false }),
-    ]).start();
+    ]).start(() => {
+      try { console.log('[ui] sheet opened'); } catch {}
+      setTimeout(() => setJustOpened(false), 350);
+    });
   }, [translateY, backdrop, contentOpacity]);
 
   const close = useCallback(() => {
@@ -433,7 +438,9 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
   const prevColor = useMemo(() => darkenColor(prevBaseColor, 0.5), [prevBaseColor, darkenColor]);
   const currColor = useMemo(() => darkenColor(currBaseColor, 0.5), [currBaseColor, darkenColor]);
 
-  const upShift = (previous && changeDirection !== 'none') ? -offsetUp : 0;
+  const effectiveDir: 'next' | 'prev' | 'none' = justOpened ? 'none' : (changeDirection as any);
+  const shouldAnimate = !!previous && effectiveDir !== 'none';
+  const upShift = shouldAnimate ? -offsetUp : 0;
   const leftShift = offsetLeft;
 
   return visible ? (
@@ -484,7 +491,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
             >
               {(() => {
                 const imageOffsetDown = Math.floor((imageSize ?? 160) * 0.03);
-                const dir = changeDirection;
+                const dir = effectiveDir;
                 const outTo = dir === 'next' ? -screenWidth : screenWidth;
                 const inFrom = dir === 'next' ? screenWidth : -screenWidth;
                 const prevTranslate = slideProg.interpolate({ inputRange: [0, 1], outputRange: [0, outTo] });
