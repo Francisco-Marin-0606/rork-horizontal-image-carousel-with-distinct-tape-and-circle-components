@@ -594,7 +594,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
                 >
                   {isPlaying ? (
                     <Image
-                      source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Pausa.png?v=20250816' }}
+                      source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/PausaV2.png' }}
                       style={{ width: 30, height: 30 }}
                       resizeMode="contain"
                       accessibilityIgnoresInvertColors
