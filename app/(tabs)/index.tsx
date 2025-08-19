@@ -592,7 +592,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
             <View style={styles.controlsRow}>
               <View style={styles.controlsInner} testID="player-controls">
                 <TouchableOpacity testID="btn-back" accessibilityRole="button" onPress={async () => { await hapticImpact('medium'); prev(); }}>
-                  <ArrowIcon direction="prev" size={34} testID="icon-prev" />
+                  <ArrowIcon direction="prev" size={38} testID="icon-prev" />
                 </TouchableOpacity>
                 <TouchableOpacity
                   testID="btn-toggle"
@@ -605,7 +605,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
                   {isPlaying ? (
                     <Image
                       source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/PausaV3.png' }}
-                      style={{ width: 36, height: 36 }}
+                      style={{ width: 40, height: 40 }}
                       resizeMode="contain"
                       accessibilityIgnoresInvertColors
                       testID="icon-pause"
@@ -613,7 +613,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
                   ) : (
                     <Image
                       source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Play.png?v=20250816' }}
-                      style={{ width: 36, height: 36 }}
+                      style={{ width: 40, height: 40 }}
                       resizeMode="contain"
                       accessibilityIgnoresInvertColors
                       testID="icon-play"
@@ -621,7 +621,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
                   )}
                 </TouchableOpacity>
                 <TouchableOpacity testID="btn-forward" accessibilityRole="button" onPress={async () => { await hapticImpact('light'); next(); }}>
-                  <ArrowIcon direction="next" size={34} testID="icon-next" />
+                  <ArrowIcon direction="next" size={38} testID="icon-next" />
                 </TouchableOpacity>
               </View>
             </View>
