@@ -239,6 +239,9 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
   }, [visible]);
 
   const { isPlaying, pause, play, current, previous, changeDirection, userPaused, next, prev } = usePlayer();
+  
+  // Forzá dir='none' solo en el primer frame si venía una dir previa pegada
+  const forceNoneOnOpen = openingThisFrame && changeDirection !== 'none';
 
   const nextRef = useRef(next);
   const prevRef = useRef(prev);
@@ -449,8 +452,8 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
   const currColor = useMemo(() => darkenColor(currBaseColor, 0.5), [currBaseColor, darkenColor]);
 
   const effectiveDir: 'next' | 'prev' | 'none' =
-    (openingThisFrame || justOpened || !visible) ? 'none' : (changeDirection as any);
-  const shouldAnimate = !!previous && effectiveDir !== 'none' && !openingThisFrame;
+    (forceNoneOnOpen || justOpened || !visible) ? 'none' : (changeDirection as any);
+  const shouldAnimate = !!previous && effectiveDir !== 'none';
   const upShift = shouldAnimate ? -offsetUp : 0;
   const leftShift = offsetLeft;
 
@@ -569,7 +572,8 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
                   );
                 };
 
-                const initialDownShift = (openingThisFrame || (!previous && dir === 'none'))
+                // Downshift solo cuando no hay "previous" (estado base)
+                const initialDownShift = (!previous && (openingThisFrame || dir === 'none'))
                   ? Math.floor(offsetUp * 0.9)
                   : 0;
                 return (
