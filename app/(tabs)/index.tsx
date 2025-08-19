@@ -603,7 +603,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
                   ) : (
                     <Image
                       source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Play.png?v=20250816' }}
-                      style={{ width: 30, height: 30 }}
+                      style={{ width: 36, height: 36 }}
                       resizeMode="contain"
                       accessibilityIgnoresInvertColors
                       testID="icon-play"
