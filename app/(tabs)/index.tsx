@@ -474,7 +474,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
           <View style={styles.grabber} />
         </View>
         <View style={styles.sheetContent} testID="player-swipe-zone" accessible accessibilityLabel="Swipe zone">
-          <View style={[styles.centerZone, (!previous && changeDirection === 'none') ? { paddingTop: Math.floor(sheetHeight * 0.06) } : null]}>
+          <View style={[styles.centerZone, (changeDirection === 'none') ? { paddingTop: Math.floor(sheetHeight * 0.06) } : null]}>
             <View
               {...coverSwipeResponder.panHandlers}
               style={[styles.centerBlock, { transform: [{ translateY: upShift }, { translateX: leftShift }] }]} 
@@ -551,7 +551,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
                   );
                 };
 
-                const initialDownShift = (!previous && dir === 'none') ? Math.floor(offsetUp * 0.9) : 0;
+                const initialDownShift = (dir === 'none') ? Math.floor(offsetUp * 0.9) : 0;
                 return (
                   <View style={{ transform: [{ translateY: initialDownShift }] }}>
                     <ScrollView
