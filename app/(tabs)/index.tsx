@@ -474,7 +474,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
           <View style={styles.grabber} />
         </View>
         <View style={styles.sheetContent} testID="player-swipe-zone" accessible accessibilityLabel="Swipe zone">
-          <View style={[styles.centerZone, (changeDirection === 'none') ? { paddingTop: Math.floor(sheetHeight * 0.10) } : null]}>
+          <View style={[styles.centerZone, (changeDirection === 'none') ? { paddingTop: Math.floor(sheetHeight * 0.06) } : null]}>
             <View
               {...coverSwipeResponder.panHandlers}
               style={[styles.centerBlock, { transform: [{ translateY: upShift }, { translateX: leftShift }] }]} 
@@ -483,7 +483,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
               accessibilityLabel="Swipe horizontal para cambiar de canción"
             >
               {(() => {
-                const imageOffsetDown = Math.floor((imageSize ?? 160) * 0.08 + sheetHeight * 0.02);
+                const imageOffsetDown = Math.floor((imageSize ?? 160) * 0.03);
                 const dir = changeDirection;
                 const outTo = dir === 'next' ? -screenWidth : screenWidth;
                 const inFrom = dir === 'next' ? screenWidth : -screenWidth;
@@ -538,8 +538,10 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
 
                   return (
                     <View key={kind} style={{ width: pageWidth, alignItems: 'center' }} testID={`pager-page-${kind}`}>
-                      <View style={{ width: (imageSize + Math.floor((imageSize * 0.7) / 2)), alignItems: 'flex-start', transform: [{ translateY: imageOffsetDown }] }}>
-                        <CoverWithVinyl imageSize={imageSize ?? 160} spinActive={kind === 'current' ? spinActive : false} vinylUrl={vinylUrl} coverUrl={coverUrl} />
+                      <View style={{ width: (imageSize + Math.floor((imageSize * 0.7) / 2)), alignItems: 'flex-start' }}>
+                        <View style={{ transform: [{ translateY: imageOffsetDown }] }}>
+                          <CoverWithVinyl imageSize={imageSize ?? 160} spinActive={kind === 'current' ? spinActive : false} vinylUrl={vinylUrl} coverUrl={coverUrl} />
+                        </View>
                         <View style={[styles.centerTextBlock, { width: '100%' }]}> 
                           <WaveText key={`title-${textKey}-${kind}`} text={title} style={styles.centerTitle} testID={`pager-title-${kind}`} />
                           <WaveText key={`subtitle-${textKey}-${kind}`} text={subtitle} style={styles.centerSubtitle} testID={`pager-subtitle-${kind}`} />
