@@ -195,7 +195,7 @@ const CarouselSection: React.FC<{ title: string; data: AlbumData[]; imageSize: n
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={[styles.scrollContent, { paddingRight: END_PADDING }]}
+        contentContainerStyle={[styles.scrollContent, { paddingRight: LEFT_PADDING }]}
         snapToOffsets={snapOffsets}
         snapToAlignment="start"
         decelerationRate="fast"
@@ -204,11 +204,14 @@ const CarouselSection: React.FC<{ title: string; data: AlbumData[]; imageSize: n
         overScrollMode="never"
         testID={`carousel-${title}`}
       >
-        {data.map((album) => (
-          <View key={album.id} style={{ width: CARD_WIDTH, marginRight: ITEM_SPACING }} testID={`carousel-item-${title}-${album.id}`}>
-            <AlbumCard album={album} imageSize={imageSize} onPress={onSelect} />
-          </View>
-        ))}
+        {data.map((album, i) => {
+          const isLast = i === data.length - 1;
+          return (
+            <View key={album.id} style={{ width: CARD_WIDTH, marginRight: isLast ? 0 : ITEM_SPACING }} testID={`carousel-item-${title}-${album.id}`}>
+              <AlbumCard album={album} imageSize={imageSize} onPress={onSelect} />
+            </View>
+          );
+        })}
       </ScrollView>
     </View>
   );
