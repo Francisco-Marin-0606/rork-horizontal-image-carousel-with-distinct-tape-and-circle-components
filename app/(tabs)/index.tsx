@@ -231,6 +231,13 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
   const offsetUp = Math.floor(sheetHeight * 0.12);
   const offsetLeft = Math.floor(screenWidth * 0.03);
 
+  // --- Primer frame desde que visible pasa a true ---
+  const wasVisibleRef = useRef<boolean>(false);
+  const openingThisFrame = visible && !wasVisibleRef.current;
+  useEffect(() => {
+    wasVisibleRef.current = visible;
+  }, [visible]);
+
   const { isPlaying, pause, play, current, previous, changeDirection, userPaused, next, prev } = usePlayer();
 
   const nextRef = useRef(next);
@@ -442,8 +449,8 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
   const currColor = useMemo(() => darkenColor(currBaseColor, 0.5), [currBaseColor, darkenColor]);
 
   const effectiveDir: 'next' | 'prev' | 'none' =
-    (justOpened || !visible) ? 'none' : (changeDirection as any);
-  const shouldAnimate = !!previous && effectiveDir !== 'none';
+    (openingThisFrame || justOpened || !visible) ? 'none' : (changeDirection as any);
+  const shouldAnimate = !!previous && effectiveDir !== 'none' && !openingThisFrame;
   const upShift = shouldAnimate ? -offsetUp : 0;
   const leftShift = offsetLeft;
 
@@ -562,7 +569,9 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
                   );
                 };
 
-                const initialDownShift = (!previous && dir === 'none') ? Math.floor(offsetUp * 0.9) : 0;
+                const initialDownShift = (openingThisFrame || (!previous && dir === 'none'))
+                  ? Math.floor(offsetUp * 0.9)
+                  : 0;
                 return (
                   <View style={{ transform: [{ translateY: initialDownShift }] }}>
                     <ScrollView
