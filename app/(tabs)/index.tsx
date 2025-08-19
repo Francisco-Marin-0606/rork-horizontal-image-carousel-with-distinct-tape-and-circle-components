@@ -23,7 +23,7 @@ const CARD_WIDTH = Math.round(screenWidth * 0.72 * 0.8);
 const LEFT_PADDING = 20;
 const ITEM_SPACING = 48;
 const END_PADDING = Math.max(0, Math.floor(screenWidth - LEFT_PADDING - CARD_WIDTH));
-const END_ALIGNMENT_TWEAK = 10 as const;
+const END_ALIGNMENT_TWEAK = 18 as const;
 
 const forYouData: AlbumData[] = [
   { id: "1", title: "Del miedo al amor", subtitle: "Aquí va un copy increíble que va a escribir Juan.", color: "#0ea5e9", audioUrl: "https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/aura/audios/AURA/Relax/TRACK9.mp3" },
