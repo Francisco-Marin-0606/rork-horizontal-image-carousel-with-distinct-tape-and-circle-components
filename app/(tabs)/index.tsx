@@ -11,6 +11,7 @@ import {
   Animated,
   Easing,
   PanResponder,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
@@ -203,9 +204,9 @@ const CarouselSection: React.FC<{ title: string; data: AlbumData[]; imageSize: n
         snapToOffsets={snapOffsets}
         snapToAlignment="start"
         decelerationRate="fast"
-        bounces={false}
-        alwaysBounceHorizontal={false}
-        overScrollMode="never"
+        bounces={Platform.OS === 'ios'}
+        alwaysBounceHorizontal={Platform.OS === 'ios'}
+        overScrollMode={Platform.OS === 'android' ? 'always' : 'never'}
         testID={`carousel-${title}`}
       >
         {data.map((album, i) => {
