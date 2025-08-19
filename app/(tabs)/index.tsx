@@ -231,17 +231,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
   const offsetUp = Math.floor(sheetHeight * 0.12);
   const offsetLeft = Math.floor(screenWidth * 0.03);
 
-  // --- Primer frame desde que visible pasa a true ---
-  const wasVisibleRef = useRef<boolean>(false);
-  const openingThisFrame = visible && !wasVisibleRef.current;
-  useEffect(() => {
-    wasVisibleRef.current = visible;
-  }, [visible]);
-
   const { isPlaying, pause, play, current, previous, changeDirection, userPaused, next, prev } = usePlayer();
-  
-  // Forzá dir='none' solo en el primer frame si venía una dir previa pegada
-  const forceNoneOnOpen = openingThisFrame && changeDirection !== 'none';
 
   const nextRef = useRef(next);
   const prevRef = useRef(prev);
@@ -252,7 +242,6 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
   const initialFade = useRef(new Animated.Value(0)).current;
   const [textKey, setTextKey] = useState<number>(0);
   const didAutoPlayRef = useRef<boolean>(false);
-  const [justOpened, setJustOpened] = useState<boolean>(false);
   useEffect(() => {
     if (!album) return;
     setTextKey((k) => k + 1);
@@ -267,15 +256,11 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
 
   const open = useCallback(() => {
     const smooth = Easing.bezier(0.22, 1, 0.36, 1);
-    setJustOpened(true);
     Animated.parallel([
       Animated.timing(translateY, { toValue: 0, duration: Math.floor(1229 * 0.7), easing: smooth, useNativeDriver: true }),
       Animated.timing(backdrop, { toValue: 1, duration: Math.floor(1065 * 0.7), easing: smooth, useNativeDriver: true }),
       Animated.timing(contentOpacity, { toValue: 0, duration: Math.floor(1106 * 0.7), easing: smooth, useNativeDriver: false }),
-    ]).start(() => {
-      try { console.log('[ui] sheet opened'); } catch {}
-      setTimeout(() => setJustOpened(false), 350);
-    });
+    ]).start();
   }, [translateY, backdrop, contentOpacity]);
 
   const close = useCallback(() => {
@@ -412,10 +397,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
   ).current;
 
   useEffect(() => {
-    if (visible) {
-      setJustOpened(true);
-      open();
-    }
+    if (visible) open();
   }, [visible, open]);
 
 
@@ -451,10 +433,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
   const prevColor = useMemo(() => darkenColor(prevBaseColor, 0.5), [prevBaseColor, darkenColor]);
   const currColor = useMemo(() => darkenColor(currBaseColor, 0.5), [currBaseColor, darkenColor]);
 
-  const effectiveDir: 'next' | 'prev' | 'none' =
-    (forceNoneOnOpen || justOpened || !visible) ? 'none' : (changeDirection as any);
-  const shouldAnimate = !!previous && effectiveDir !== 'none';
-  const upShift = shouldAnimate ? -offsetUp : 0;
+  const upShift = (previous && changeDirection !== 'none') ? -offsetUp : 0;
   const leftShift = offsetLeft;
 
   return visible ? (
@@ -505,7 +484,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
             >
               {(() => {
                 const imageOffsetDown = Math.floor((imageSize ?? 160) * 0.03);
-                const dir = effectiveDir;
+                const dir = changeDirection;
                 const outTo = dir === 'next' ? -screenWidth : screenWidth;
                 const inFrom = dir === 'next' ? screenWidth : -screenWidth;
                 const prevTranslate = slideProg.interpolate({ inputRange: [0, 1], outputRange: [0, outTo] });
@@ -572,10 +551,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
                   );
                 };
 
-                // Downshift solo cuando no hay "previous" (estado base)
-                const initialDownShift = (!previous && (openingThisFrame || dir === 'none'))
-                  ? Math.floor(offsetUp * 0.9)
-                  : 0;
+                const initialDownShift = (!previous && dir === 'none') ? Math.floor(offsetUp * 0.9) : 0;
                 return (
                   <View style={{ transform: [{ translateY: initialDownShift }] }}>
                     <ScrollView
