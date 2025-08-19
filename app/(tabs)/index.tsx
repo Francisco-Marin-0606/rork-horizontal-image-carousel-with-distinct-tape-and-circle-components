@@ -199,13 +199,13 @@ const CarouselSection: React.FC<{ title: string; data: AlbumData[]; imageSize: n
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={[styles.scrollContent, { paddingRight: LEFT_PADDING }]}
+        contentContainerStyle={[styles.scrollContent, { paddingRight: END_PADDING + LEFT_PADDING }]}
         snapToOffsets={snapOffsets}
         snapToAlignment="start"
         decelerationRate="fast"
-        bounces={false}
-        alwaysBounceHorizontal={false}
-        overScrollMode="never"
+        bounces
+        alwaysBounceHorizontal
+        overScrollMode="always"
         testID={`carousel-${title}`}
       >
         {data.map((album, i) => {
