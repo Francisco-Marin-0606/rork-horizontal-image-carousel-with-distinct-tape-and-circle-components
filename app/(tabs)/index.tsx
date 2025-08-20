@@ -187,13 +187,13 @@ const AlbumCard: React.FC<AlbumCardProps> = React.memo(({ album, imageSize, onPr
   );
 });
 
-const CarouselSection: React.FC<{ title: string; data: AlbumData[]; imageSize: number; onSelect: (a: AlbumData) => void; topSpacing?: number }> = ({ title, data, imageSize, onSelect, topSpacing }) => {
+const CarouselSection: React.FC<{ title: string; data: AlbumData[]; imageSize: number; onSelect: (a: AlbumData) => void; topSpacing?: number; bottomSpacing?: number }> = ({ title, data, imageSize, onSelect, topSpacing, bottomSpacing }) => {
   const snapOffsets = useMemo(() => {
     const offsets = data.map((_, i) => i * (CARD_WIDTH + ITEM_SPACING));
     return offsets;
   }, [data]);
   return (
-    <View style={[styles.section, topSpacing ? { marginTop: topSpacing } : null]}>
+    <View style={[styles.section, topSpacing ? { marginTop: topSpacing } : null, bottomSpacing != null ? { marginBottom: bottomSpacing } : null]}>
       {title && title.trim().length > 0 ? (
         <Text style={styles.sectionTitle} testID={`section-title-${title}`}>{title}</Text>
       ) : null}
@@ -703,7 +703,7 @@ export default function MusicPlayerScreen() {
             testID="vertical-scroll"
           >
             <CarouselSection title="Para ti" data={forYouData} imageSize={imageSize} topSpacing={16} onSelect={async (a) => { await hapticSelection(); handleSelect(a); }} />
-            <CarouselSection title="Instrumental" data={instrumentalData} imageSize={imageSize} onSelect={async (a) => { await hapticSelection(); handleSelect(a); }} />
+            <CarouselSection title="Instrumental" data={instrumentalData} imageSize={imageSize} bottomSpacing={24} onSelect={async (a) => { await hapticSelection(); handleSelect(a); }} />
             <CarouselSection title="" data={extraData} imageSize={imageSize} onSelect={async (a) => { await hapticSelection(); handleSelect(a); }} />
           </ScrollView>
         </SafeAreaView>
