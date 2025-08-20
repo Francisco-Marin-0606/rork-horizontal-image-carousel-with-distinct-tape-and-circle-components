@@ -244,6 +244,15 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
 
   const { isPlaying, pause, play, current, previous, changeDirection, userPaused, next, prev } = usePlayer();
 
+  const [optimisticPlaying, setOptimisticPlaying] = useState<boolean>(false);
+  const optTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const armOptimistic = useCallback((ms: number = 700) => {
+    setOptimisticPlaying(true);
+    if (optTimer.current) clearTimeout(optTimer.current);
+    optTimer.current = setTimeout(() => setOptimisticPlaying(false), ms);
+  }, []);
+  useEffect(() => () => { if (optTimer.current) clearTimeout(optTimer.current); }, []);
+
   const nextRef = useRef(next);
   const prevRef = useRef(prev);
   useEffect(() => { nextRef.current = next; }, [next]);
@@ -264,6 +273,12 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
     slideProg.setValue(0);
     Animated.timing(slideProg, { toValue: 1, duration: Math.floor(1310 * 0.7), easing: Easing.bezier(0.22, 1, 0.36, 1), useNativeDriver: true }).start();
   }, [album, previous, changeDirection, slideProg, initialFade]);
+
+  useEffect(() => {
+    if (previous && changeDirection !== 'none' && !userPaused) {
+      armOptimistic(750);
+    }
+  }, [previous, changeDirection, userPaused, armOptimistic]);
 
   const open = useCallback(() => {
     const smooth = Easing.bezier(0.22, 1, 0.36, 1);
@@ -362,6 +377,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
             const goingNext = g.dx < 0;
             try { console.log('[ui] swipe commit (move)', { goingNext, distance, velocity }); } catch {}
             hapticImpact('rigid');
+            armOptimistic(800);
             if (goingNext) {
               nextRef.current?.().catch((e) => console.warn('[ui] swipe next failed', e));
             } else {
@@ -383,6 +399,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
             const goingNext = (g.dx ?? 0) < 0;
             try { console.log('[ui] swipe commit (release)', { goingNext, distance, velocity }); } catch {}
             hapticImpact('rigid');
+            armOptimistic(800);
             if (goingNext) {
               nextRef.current?.().catch((e) => console.warn('[ui] swipe next failed', e));
             } else {
@@ -420,7 +437,8 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
   }, [userPaused]);
 
   const opacity = backdrop.interpolate({ inputRange: [0, 1], outputRange: [0, 1] });
-  const spinActive = isPlaying && current?.id === album?.id;
+  const displayPlaying = (isPlaying || optimisticPlaying);
+  const spinActive = displayPlaying && current?.id === album?.id;
   const prevBaseColor = previous?.color ?? '#063536';
   const currBaseColor = album?.color ?? '#EA580C';
 
@@ -592,7 +610,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
             </View>
             <View style={styles.controlsRow}>
               <View style={styles.controlsInner} testID="player-controls">
-                <TouchableOpacity testID="btn-back" accessibilityRole="button" onPress={async () => { await hapticImpact('medium'); prev(); }}>
+                <TouchableOpacity testID="btn-back" accessibilityRole="button" onPress={async () => { await hapticImpact('medium'); armOptimistic(800); prev(); }}>
                   <ArrowIcon direction="prev" size={38} testID="icon-prev" />
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -600,10 +618,18 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
                   accessibilityRole="button"
                   style={styles.playButton}
                   hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-                  onPress={async () => { await hapticImpact('medium'); if (isPlaying) { await pause(); } else { await play(); } }}
-                  accessibilityLabel={isPlaying ? "Pausar" : "Reproducir"}
+                  onPress={async () => {
+                    await hapticImpact('medium');
+                    if (displayPlaying) {
+                      setOptimisticPlaying(false);
+                      await pause();
+                    } else {
+                      await play();
+                    }
+                  }}
+                  accessibilityLabel={displayPlaying ? "Pausar" : "Reproducir"}
                 >
-                  {isPlaying ? (
+                  {displayPlaying ? (
                     <Image
                       source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/PausaV3.png' }}
                       style={{ width: 40, height: 40 }}
@@ -621,7 +647,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
                     />
                   )}
                 </TouchableOpacity>
-                <TouchableOpacity testID="btn-forward" accessibilityRole="button" onPress={async () => { await hapticImpact('light'); next(); }}>
+                <TouchableOpacity testID="btn-forward" accessibilityRole="button" onPress={async () => { await hapticImpact('light'); armOptimistic(800); next(); }}>
                   <ArrowIcon direction="next" size={38} testID="icon-next" />
                 </TouchableOpacity>
               </View>
