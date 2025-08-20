@@ -61,10 +61,17 @@ export default function StickyPlayer() {
   }, [current, uiOpen, dismissed, slideY, opacity, dragDY]);
 
   useEffect(() => {
-    if (previous && changeDirection !== 'none' && !userPaused) {
+    const shouldOptimistic = previous && changeDirection !== 'none' && !userPaused && (isPlaying || optimisticPlaying);
+    if (shouldOptimistic) {
       armOptimistic(750);
     }
-  }, [previous, changeDirection, userPaused, armOptimistic]);
+  }, [previous, changeDirection, userPaused, isPlaying, optimisticPlaying, armOptimistic]);
+
+  useEffect(() => {
+    if (!isPlaying) {
+      setOptimisticPlaying(false);
+    }
+  }, [isPlaying]);
 
   const panResponder = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => false,
@@ -153,7 +160,10 @@ export default function StickyPlayer() {
         <View style={styles.actions}>
           <TouchableOpacity
             accessibilityRole="button"
-            onPress={async () => { try { console.log('[ui] sticky prev track'); } catch {}; armOptimistic(800); await prev(); }}
+            onPress={async () => { try { console.log('[ui] sticky prev track'); } catch {};
+              if (isPlaying || optimisticPlaying) armOptimistic(800);
+              await prev();
+            }}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             style={{ marginRight: 28 }}
             testID="sticky-prev"
@@ -172,6 +182,7 @@ export default function StickyPlayer() {
                 setOptimisticPlaying(false);
                 await pause();
               } else {
+                armOptimistic(800);
                 await play();
               }
             }}
@@ -198,7 +209,10 @@ export default function StickyPlayer() {
           </TouchableOpacity>
           <TouchableOpacity
             accessibilityRole="button"
-            onPress={async () => { try { console.log('[ui] sticky next track'); } catch {}; armOptimistic(800); await next(); }}
+            onPress={async () => { try { console.log('[ui] sticky next track'); } catch {};
+              if (isPlaying || optimisticPlaying) armOptimistic(800);
+              await next();
+            }}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             style={{ marginLeft: 28, marginRight: 12 }}
             testID="sticky-next"
