@@ -730,7 +730,7 @@ const styles = StyleSheet.create({
   scrollContent: { paddingHorizontal: LEFT_PADDING },
   cardContainer: { width: "100%" },
   textBlockColumn: { marginTop: 10, alignSelf: "flex-start" },
-  cardTitle: { fontSize: 18, fontWeight: "800", color: "#fff" },
+  cardTitle: { fontSize: 18, fontWeight: "500", color: "#fff" },
   cardSubtitle: { marginTop: 4, fontSize: 13, color: "#6B7280" },
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: "#000" },
   sheetContainer: { position: "absolute", left: 0, right: 0, bottom: 0, borderTopLeftRadius: 36, borderTopRightRadius: 36, overflow: "hidden" as const },
