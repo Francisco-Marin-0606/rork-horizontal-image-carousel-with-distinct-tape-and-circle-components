@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Image, PanResponder, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { usePlayer } from "@/providers/PlayerProvider";
 import { hapticSelection } from "@/utils/haptics";
@@ -10,7 +10,7 @@ const COVER_URL_3 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/M
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export default function StickyPlayer() {
-  const { current, isPlaying, toggle, next, prev, uiOpen, setUIOpen, pause } = usePlayer();
+  const { current, previous, changeDirection, userPaused, isPlaying, next, prev, uiOpen, setUIOpen, pause, play } = usePlayer();
 
   const coverUrl = useMemo(() => {
     const n = Number(current?.id ?? '');
@@ -20,6 +20,18 @@ export default function StickyPlayer() {
     }
     return COVER_URL_1;
   }, [current?.id]);
+
+  // Anti-flicker: reproducción optimista en cambios de track
+  const [optimisticPlaying, setOptimisticPlaying] = useState<boolean>(false);
+  const optTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const armOptimistic = useCallback((ms: number = 700) => {
+    setOptimisticPlaying(true);
+    if (optTimer.current) clearTimeout(optTimer.current);
+    optTimer.current = setTimeout(() => setOptimisticPlaying(false), ms);
+  }, []);
+  useEffect(() => {
+    return () => { if (optTimer.current) clearTimeout(optTimer.current); };
+  }, []);
 
   const TAB_BAR_HEIGHT = 84 as const;
   const slideY = useRef(new Animated.Value(TAB_BAR_HEIGHT + 24)).current;
@@ -47,6 +59,12 @@ export default function StickyPlayer() {
       ]).start();
     }
   }, [current, uiOpen, dismissed, slideY, opacity, dragDY]);
+
+  useEffect(() => {
+    if (previous && changeDirection !== 'none' && !userPaused) {
+      armOptimistic(750);
+    }
+  }, [previous, changeDirection, userPaused, armOptimistic]);
 
   const panResponder = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => false,
@@ -95,6 +113,8 @@ export default function StickyPlayer() {
     return Animated.add(slideY, dragDY.interpolate({ inputRange: [-200, 0, 300], outputRange: [0, 0, 300], extrapolate: 'clamp' }));
   }, [slideY, dragDY]);
 
+  const displayPlaying = isPlaying || optimisticPlaying;
+
   if (!current) return null;
 
   return (
@@ -133,7 +153,7 @@ export default function StickyPlayer() {
         <View style={styles.actions}>
           <TouchableOpacity
             accessibilityRole="button"
-            onPress={async () => { try { console.log('[ui] sticky prev track'); } catch {}; await prev(); }}
+            onPress={async () => { try { console.log('[ui] sticky prev track'); } catch {}; armOptimistic(800); await prev(); }}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             style={{ marginRight: 28 }}
             testID="sticky-prev"
@@ -147,11 +167,18 @@ export default function StickyPlayer() {
           </TouchableOpacity>
           <TouchableOpacity
             accessibilityRole="button"
-            onPress={async () => { try { console.log('[ui] sticky toggle'); } catch {}; await toggle(); }}
+            onPress={async () => { try { console.log('[ui] sticky toggle'); } catch {};
+              if (displayPlaying) {
+                setOptimisticPlaying(false);
+                await pause();
+              } else {
+                await play();
+              }
+            }}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             testID="sticky-toggle"
           >
-            {isPlaying ? (
+            {displayPlaying ? (
               <Image
                 source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/PausaV3.png' }}
                 style={{ width: 21, height: 21 }}
@@ -171,7 +198,7 @@ export default function StickyPlayer() {
           </TouchableOpacity>
           <TouchableOpacity
             accessibilityRole="button"
-            onPress={async () => { try { console.log('[ui] sticky next track'); } catch {}; await next(); }}
+            onPress={async () => { try { console.log('[ui] sticky next track'); } catch {}; armOptimistic(800); await next(); }}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             style={{ marginLeft: 28, marginRight: 12 }}
             testID="sticky-next"
