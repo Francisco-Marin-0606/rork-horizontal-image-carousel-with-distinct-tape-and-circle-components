@@ -3,7 +3,6 @@ import { hapticSelection } from "@/utils/haptics";
 import { Music, User } from "lucide-react-native";
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import StickyPlayer from "@/components/StickyPlayer";
 
 export default function TabLayout() {
   return (
@@ -46,7 +45,6 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-      <StickyPlayer />
     </View>
   );
 }
