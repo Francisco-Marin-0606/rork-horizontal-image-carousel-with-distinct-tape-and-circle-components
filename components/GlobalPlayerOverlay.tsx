@@ -263,7 +263,8 @@ export default function GlobalPlayerOverlay() {
     return COVER_URL_1;
   };
 
-  const imageSize = Math.max(120, Math.floor(Math.min(screenWidth * 0.72, 360)));
+  const baseImageSize = Math.max(120, Math.floor(Math.min(screenWidth * 0.72, 360)));
+  const imageSize = Math.floor(baseImageSize * 0.5);
   const imageOffsetDown = Math.floor(imageSize * 0.03);
   const dir = changeDirection;
   const outTo = dir === 'next' ? -screenWidth : screenWidth;
