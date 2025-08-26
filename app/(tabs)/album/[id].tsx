@@ -120,14 +120,19 @@ export default function AlbumScreen() {
   const SIDE_MARGIN = Math.floor(screenWidth * 0.05);
 
   const entryOpacity = useRef(new Animated.Value(0)).current;
+  const entryTranslateX = useRef(new Animated.Value(screenWidth)).current;
   useEffect(() => {
-    try { console.log('[nav] Album mount -> fade in'); } catch {}
+    try { console.log('[nav] Album mount -> slide + fade in'); } catch {}
     entryOpacity.setValue(0);
-    Animated.timing(entryOpacity, { toValue: 1, duration: 520, easing: Easing.bezier(0.22, 1, 0.36, 1), useNativeDriver: true }).start();
-  }, [entryOpacity]);
+    entryTranslateX.setValue(screenWidth);
+    Animated.parallel([
+      Animated.timing(entryOpacity, { toValue: 1, duration: 520, easing: Easing.bezier(0.22, 1, 0.36, 1), useNativeDriver: true }),
+      Animated.timing(entryTranslateX, { toValue: 0, duration: 520, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+    ]).start();
+  }, [entryOpacity, entryTranslateX]);
 
   return (
-    <Animated.View style={[styles.root, { opacity: entryOpacity }]} testID="album-screen-root">
+    <Animated.View style={[styles.root, { opacity: entryOpacity, transform: [{ translateX: entryTranslateX }] }]} testID="album-screen-root">
       <LinearGradient
         colors={[baseColor, '#000000', '#000000']}
         locations={[0, 0.5, 1]}
