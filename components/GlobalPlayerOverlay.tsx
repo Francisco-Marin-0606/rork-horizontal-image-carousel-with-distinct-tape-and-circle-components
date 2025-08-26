@@ -263,17 +263,17 @@ export default function GlobalPlayerOverlay() {
     return COVER_URL_1;
   };
 
-  const baseImageSize = Math.max(120, Math.floor(Math.min(screenWidth * 0.72, 360)));
-  const imageSize = Math.floor(baseImageSize * 0.575);
-  const imageOffsetDown = Math.floor(imageSize * 0.03);
+  const imageBase = Math.min(320, Math.floor(screenWidth * 0.68));
+  const imageSize = Math.floor(imageBase * 0.72);
+  const imageOffsetDown = 0;
   const dir = changeDirection;
   const outTo = dir === 'next' ? -screenWidth : screenWidth;
   const inFrom = dir === 'next' ? screenWidth : -screenWidth;
   const prevTranslate = slideProg.interpolate({ inputRange: [0, 1], outputRange: [0, outTo] });
   const currTranslate = slideProg.interpolate({ inputRange: [0, 1], outputRange: [inFrom, 0] });
   const shouldAnimate = !!previous && dir !== 'none';
-  const upShift = (previous && dir !== 'none') ? -offsetUp : 0;
-  const leftShift = offsetLeft;
+  const upShift = 0;
+  const leftShift = 0;
 
   return uiOpen ? (
     <View style={StyleSheet.absoluteFill} pointerEvents="box-none" testID="global-player-overlay-root">
@@ -314,7 +314,7 @@ export default function GlobalPlayerOverlay() {
                   </Animated.View>
                 </View>
               ) : (
-                <View style={{ transform: [{ translateY: Math.floor(offsetUp * 0.9) }] }}>
+                <View>
                   <View style={{ width: (imageSize + Math.floor((imageSize * 0.7) / 2)), alignItems: 'flex-start' }}>
                     <View style={{ transform: [{ translateY: imageOffsetDown }] }}>
                       <CoverWithVinyl imageSize={imageSize} spinActive={spinActive} vinylUrl={getVinylUrlById(current?.id)} coverUrl={getCoverUrlById(current?.id)} />
