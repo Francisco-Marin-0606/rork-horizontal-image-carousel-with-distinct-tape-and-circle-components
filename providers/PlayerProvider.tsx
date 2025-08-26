@@ -208,19 +208,13 @@ export const [PlayerProvider, usePlayer] = createContextHook<PlayerState>(() => 
     const loaded = await ensureLoaded(nextUrl);
     if (myId !== loadIdRef.current) return;
 
-    if (userPausedRef.current) {
-      setIsPlaying(false);
-      return;
-    }
-
+    // Do not block due to previous pause when user explicitly selected something.
     if (shouldAutoplayInitial) {
       try {
         if (Platform.OS === 'web') {
           const el = (loaded as unknown as HTMLAudioElement) ?? webAudioRef.current;
           if (myId !== loadIdRef.current) return;
-          if (!userPausedRef.current) {
-            await el?.play?.();
-          }
+          await el?.play?.();
         } else {
           let s: ExpoAudio.Sound | null = (loaded as ExpoAudio.Sound) ?? soundRef.current;
           if (s) {
@@ -232,17 +226,16 @@ export const [PlayerProvider, usePlayer] = createContextHook<PlayerState>(() => 
             }
           }
           if (myId !== loadIdRef.current) return;
-          if (!userPausedRef.current) {
-            await s?.playAsync?.();
-          }
+          await s?.playAsync?.();
         }
-        if (!userPausedRef.current) {
-          setIsPlaying(true);
-          setUserPaused(false);
-        }
+        setIsPlaying(true);
+        setUserPaused(false);
       } catch (e) {
         console.log('[player] playAlbum immediate play failed', e);
       }
+    } else {
+      setIsPlaying(false);
+      setUserPaused(true);
     }
   }, [ensureLoaded, current, stopAndUnload]);
 
