@@ -68,8 +68,8 @@ const WaveText: React.FC<WaveTextProps> = React.memo(({ text, style, delayPerWor
       Animated.timing(v, { toValue: 1, duration, delay: i * delayPerWord, easing: Easing.bezier(0.22, 1, 0.36, 1), useNativeDriver: true })
     );
     running.current = animations;
-    Animated.stagger(Math.max(10, Math.floor(delayPerWord * 0.6)), animations).start((res) => {
-      if (res.finished) running.current = null;
+    Animated.stagger(Math.max(10, Math.floor(delayPerWord * 0.6)), animations).start(({ finished }) => {
+      if (finished) running.current = null;
     });
 
     return () => {
@@ -299,8 +299,8 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
       Animated.timing(translateY, { toValue: sheetHeight, duration: Math.floor(1065 * 0.7), easing: smoothIn, useNativeDriver: true }),
       Animated.timing(backdrop, { toValue: 0, duration: Math.floor(983 * 0.7), easing: smoothIn, useNativeDriver: true }),
       Animated.timing(contentOpacity, { toValue: 1, duration: Math.floor(983 * 0.7), easing: smoothIn, useNativeDriver: false }),
-    ]).start((res) => {
-      if (res.finished) onClose();
+    ]).start(({ finished }) => {
+      if (finished) onClose();
     });
   }, [translateY, backdrop, onClose, sheetHeight, contentOpacity]);
 
@@ -670,75 +670,10 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
   ) : null;
 }
 
-function AlbumSlideInPanel({ visible, album, onClose, imageSize, contentOpacity }: { visible: boolean; album: AlbumData | null; onClose: () => void; imageSize: number; contentOpacity: Animated.Value; }) {
-  const translateX = useRef(new Animated.Value(screenWidth)).current;
-  const backdrop = useRef(new Animated.Value(0)).current;
-  const { isPlaying, current, setQueue, select, setUIOpen } = usePlayer();
-
-  const open = useCallback(() => {
-    const smooth = Easing.bezier(0.22, 1, 0.36, 1);
-    Animated.parallel([
-      Animated.timing(translateX, { toValue: 0, duration: 520, easing: smooth, useNativeDriver: true }),
-      Animated.timing(backdrop, { toValue: 1, duration: 420, easing: smooth, useNativeDriver: true }),
-      Animated.timing(contentOpacity, { toValue: 0.08, duration: 380, easing: smooth, useNativeDriver: false }),
-    ]).start();
-  }, [translateX, backdrop, contentOpacity]);
-
-  const close = useCallback(() => {
-    const smooth = Easing.bezier(0.4, 0, 0.2, 1);
-    Animated.parallel([
-      Animated.timing(translateX, { toValue: screenWidth, duration: 420, easing: smooth, useNativeDriver: true }),
-      Animated.timing(backdrop, { toValue: 0, duration: 360, easing: smooth, useNativeDriver: true }),
-      Animated.timing(contentOpacity, { toValue: 1, duration: 360, easing: smooth, useNativeDriver: false }),
-    ]).start((res) => { if (res.finished) onClose(); });
-  }, [translateX, backdrop, onClose, contentOpacity]);
-
-  useEffect(() => { if (visible) open(); }, [visible, open]);
-
-  const spinActive = isPlaying && isSameAlbum(current?.id, album?.id ?? null);
-  const opacity = backdrop.interpolate({ inputRange: [0, 1], outputRange: [0, 1] });
-
-  return visible ? (
-    <View style={StyleSheet.absoluteFill} pointerEvents="box-none" testID="album-panel-root">
-      <Animated.View style={[styles.backdrop, { opacity }]} testID="album-panel-backdrop">
-        <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={close} testID="album-panel-backdrop-touch" />
-      </Animated.View>
-      <Animated.View style={[styles.albumPanel, { transform: [{ translateX }] }]} testID="album-panel">
-        <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
-          <View style={{ padding: 20, paddingTop: 16 }}>
-            <Text style={styles.albumPanelTitle} numberOfLines={1} testID="album-panel-title">{album?.title ?? ''}</Text>
-            <Text style={styles.albumPanelSubtitle} numberOfLines={2} testID="album-panel-subtitle">{album?.subtitle ?? ''}</Text>
-          </View>
-          <View style={{ alignItems: 'center', paddingHorizontal: 20 }}>
-            <CoverWithVinyl imageSize={Math.min(Math.max(140, imageSize + 20), 260)} spinActive={spinActive} vinylUrl={(Number(album?.id ?? '1') % 2 === 0 ? VINYL_URL_2 : VINYL_URL_1)} coverUrl={(Number(album?.id ?? '1') % 3 === 1 ? COVER_URL_1 : Number(album?.id ?? '1') % 3 === 2 ? COVER_URL_2 : COVER_URL_3)} />
-          </View>
-          <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
-            <TouchableOpacity
-              style={styles.albumPlayButton}
-              activeOpacity={0.85}
-              onPress={async () => {
-                const chosen = album;
-                if (!chosen) return;
-                setQueue([chosen]);
-                await select(chosen, { forceAutoplay: true });
-                setUIOpen(true);
-              }}
-              testID="album-panel-play"
-            >
-              <Text style={styles.albumPlayButtonText}>{isPlaying && isSameAlbum(current?.id, album?.id ?? null) ? 'Pausar/Reanudar en Player' : 'Reproducir'}</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </Animated.View>
-    </View>
-  ) : null;
-}
-
 export default function MusicPlayerScreen() {
   const router = useRouter();
   const [contentHeight, setContentHeight] = useState<number>(Math.max(screenHeight - 160, 400));
   const [selected, setSelected] = useState<AlbumData | null>(null);
-  const [albumPanelVisible, setAlbumPanelVisible] = useState<boolean>(false);
   const [sheetVisible, setSheetVisible] = useState<boolean>(false);
   const { setUIOpen, setQueue, select, uiOpen, current } = usePlayer();
   const contentOpacity = useRef(new Animated.Value(1)).current;
@@ -785,8 +720,6 @@ export default function MusicPlayerScreen() {
     setUIOpen(true);
   }, [select, setUIOpen]);
 
-  const openAlbumPanel = useCallback((a: AlbumData) => { setSelected(a); setAlbumPanelVisible(true); }, []);
-
   const navigateToAlbumWithFade = useCallback((a: AlbumData) => {
     if (isNavigatingRef.current) return;
     isNavigatingRef.current = true;
@@ -813,19 +746,12 @@ export default function MusicPlayerScreen() {
             testID="vertical-scroll"
           >
             <CarouselSection title="Para ti" data={forYouData} imageSize={imageSize} topSpacing={16} onSelect={async (a) => { await hapticSelection(); handleSelect(a); }} />
-            <CarouselSection title="Instrumentales" data={instrumentalData} imageSize={imageSize} bottomSpacing={24} onSelect={async (a) => { await hapticSelection(); openAlbumPanel(a); }} />
-            <CarouselSection title="" data={extraData} imageSize={imageSize} onSelect={async (a) => { await hapticSelection(); openAlbumPanel(a); }} />
+            <CarouselSection title="Instrumentales" data={instrumentalData} imageSize={imageSize} bottomSpacing={24} onSelect={async (a) => { await hapticSelection(); navigateToAlbumWithFade(a); }} />
+            <CarouselSection title="" data={extraData} imageSize={imageSize} onSelect={async (a) => { await hapticSelection(); navigateToAlbumWithFade(a); }} />
           </ScrollView>
         </SafeAreaView>
       </Animated.View>
 
-      <AlbumSlideInPanel
-        visible={albumPanelVisible}
-        album={selected}
-        onClose={() => setAlbumPanelVisible(false)}
-        imageSize={imageSize}
-        contentOpacity={contentOpacity}
-      />
     </View>
   );
 }
@@ -859,10 +785,5 @@ const styles = StyleSheet.create({
   moreFab: { position: "absolute", right: 24, bottom: 28, width: 40, height: 40, borderRadius: 20, backgroundColor: "rgba(255,255,255,0.04)", alignItems: "center", justifyContent: "center", flexDirection: "row" },
   moreDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: "#64748B" },
   controlsInner: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "64%", alignSelf: "center" },
-  animatedContentWrapper: { flex: 1 },
-  albumPanel: { position: 'absolute', top: 0, bottom: 0, right: 0, width: Math.min(560, screenWidth), backgroundColor: '#0B0F14', borderTopLeftRadius: 24, borderBottomLeftRadius: 24, overflow: 'hidden' as const },
-  albumPanelTitle: { color: '#fff', fontSize: 26, fontWeight: '800' as const },
-  albumPanelSubtitle: { color: '#94a3b8', fontSize: 14, marginTop: 6 },
-  albumPlayButton: { marginTop: 12, backgroundColor: '#111827', paddingVertical: 14, borderRadius: 14, alignItems: 'center' },
-  albumPlayButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' as const }
+  animatedContentWrapper: { flex: 1 }
 });
