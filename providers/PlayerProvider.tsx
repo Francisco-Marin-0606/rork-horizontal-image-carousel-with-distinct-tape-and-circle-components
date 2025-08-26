@@ -27,6 +27,8 @@ export type PlayerState = {
   seekBy: (seconds: number) => Promise<void>;
 };
 
+const baseId = (id?: string | null) => (id ? String(id).split('-')[0] : '');
+
 export const [PlayerProvider, usePlayer] = createContextHook<PlayerState>(() => {
   const [current, setCurrent] = useState<AlbumData | null>(null);
   const [previous, setPrevious] = useState<AlbumData | null>(null);
@@ -92,12 +94,14 @@ export const [PlayerProvider, usePlayer] = createContextHook<PlayerState>(() => 
         try { currentEl.load?.(); } catch {}
       }
       const el = new (window as any).Audio(nextUrl) as HTMLAudioElement;
+      try { (el as any).crossOrigin = 'anonymous'; } catch {}
       el.preload = "auto";
       try { (el as any).playsInline = true; } catch {}
       el.onended = () => {
         try { setIsPlaying(false); } catch {}
         try { advanceNextRef.current?.(); } catch {}
-      };      el.onplay = () => { if (idSnapshot === loadIdRef.current) { setIsPlaying(true); setUserPaused(false); } };
+      };
+      el.onplay = () => { if (idSnapshot === loadIdRef.current) { setIsPlaying(true); setUserPaused(false); } };
       el.onpause = () => { if (idSnapshot === loadIdRef.current) { setIsPlaying(false); } };
       try { (el as any).autoplay = false; } catch {}
       webAudioRef.current = el;
@@ -263,7 +267,18 @@ export const [PlayerProvider, usePlayer] = createContextHook<PlayerState>(() => 
       Alert.alert?.('Audio', 'Esta pista no tiene audio disponible');
       return;
     }
-    const dir = opts?.direction ?? (current ? (Number(chosen.id) > Number(current.id) ? 'next' : Number(chosen.id) < Number(current.id) ? 'prev' : 'none') : 'none');
+    const dir = (() => {
+      if (opts?.direction) return opts.direction;
+      if (!current) return 'none';
+      const a = Number(baseId(chosen.id));
+      const b = Number(baseId(current.id));
+      if (Number.isFinite(a) && Number.isFinite(b)) {
+        if (a > b) return 'next';
+        if (a < b) return 'prev';
+        return 'none';
+      }
+      return chosen.id !== current.id ? 'next' : 'none';
+    })();
     await internalPlayAlbum(chosen, urlToUse, dir, opts?.forceAutoplay);
   }, [internalPlayAlbum, current]);
 
@@ -275,8 +290,12 @@ export const [PlayerProvider, usePlayer] = createContextHook<PlayerState>(() => 
   const next = useCallback(async () => {
     const total = queue.length;
     if (total <= 0) return;
-    const idx = indexInQueue(current?.id);
-    if (idx === -1) return;
+    let idx = indexInQueue(current?.id);
+    if (idx === -1) {
+      const bi = queue.findIndex(a => baseId(a.id) === baseId(current?.id ?? null));
+      idx = bi !== -1 ? bi : -1;
+    }
+    if (idx === -1) idx = 0;
     const nextIdx = (idx + 1) % total;
     const a = queue[nextIdx];
     const nextUrl = a?.audioUrl ?? '';
@@ -287,8 +306,12 @@ export const [PlayerProvider, usePlayer] = createContextHook<PlayerState>(() => 
   const prev = useCallback(async () => {
     const total = queue.length;
     if (total <= 0) return;
-    const idx = indexInQueue(current?.id);
-    if (idx === -1) return;
+    let idx = indexInQueue(current?.id);
+    if (idx === -1) {
+      const bi = queue.findIndex(a => baseId(a.id) === baseId(current?.id ?? null));
+      idx = bi !== -1 ? bi : -1;
+    }
+    if (idx === -1) idx = 0;
     const prevIdx = (idx - 1 + total) % total;
     const a = queue[prevIdx];
     const prevUrl = a?.audioUrl ?? '';
