@@ -96,7 +96,7 @@ export default function AlbumScreen() {
 
   const baseColor = album.color ?? '#111827';
 
-  const SIDE_MARGIN = Math.floor(screenWidth * 0.2);
+  const SIDE_MARGIN = Math.floor(screenWidth * 0.05);
 
   return (
     <View style={styles.root} testID="album-screen-root">
