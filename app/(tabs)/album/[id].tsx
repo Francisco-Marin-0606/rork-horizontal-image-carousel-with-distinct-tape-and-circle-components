@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView, Animated, Easing, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -60,19 +60,30 @@ const getVinylUrlById = (id: string) => {
 export default function AlbumScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const idParam = (params.id as string) ?? '';
+  const idParam = (Array.isArray(params.id) ? params.id[0] : (params.id as string)) ?? '';
+  const titleParam = (Array.isArray(params.title) ? params.title[0] : (params.title as string)) ?? '';
+  const subtitleParam = (Array.isArray(params.subtitle) ? params.subtitle[0] : (params.subtitle as string)) ?? '';
+  const colorParam = (Array.isArray(params.color) ? params.color[0] : (params.color as string)) ?? undefined;
+  const audioUrlParam = (Array.isArray(params.audioUrl) ? params.audioUrl[0] : (params.audioUrl as string)) ?? undefined;
   const { queue, select, current, isPlaying, play, setQueue, setUIOpen } = usePlayer();
+
+  const albumFromParams = useMemo<AlbumData | null>(() => {
+    if (!idParam) return null;
+    return {
+      id: idParam,
+      title: titleParam || `Álbum ${idParam}`,
+      subtitle: subtitleParam || 'Colección de pistas',
+      color: (colorParam as string | undefined) ?? '#111827',
+      audioUrl: (audioUrlParam as string | undefined) ?? '',
+    } as AlbumData;
+  }, [idParam, titleParam, subtitleParam, colorParam, audioUrlParam]);
 
   const albumFromQueue = useMemo<AlbumData | null>(() => {
     const base = queue.find(a => a.id === idParam) ?? null;
     return base;
   }, [queue, idParam]);
 
-  const [albumSnapshot, setAlbumSnapshot] = useState<AlbumData | null>(null);
-  React.useEffect(() => {
-    if (!albumSnapshot && albumFromQueue) setAlbumSnapshot(albumFromQueue);
-  }, [albumSnapshot, albumFromQueue]);
-  const album = albumSnapshot ?? albumFromQueue;
+  const album: AlbumData | null = albumFromParams ?? albumFromQueue;
 
   const tracks = useMemo<AlbumData[]>(() => (album ? inventedTracks(album) : []), [album]);
 
