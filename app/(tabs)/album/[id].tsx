@@ -180,27 +180,32 @@ export default function AlbumScreen() {
             </View>
 
             <View style={styles.listDivider} />
-            {tracks.map((t, idx) => (
-              <TouchableOpacity
-                key={t.id}
-                style={[styles.row]}
-                activeOpacity={0.8}
-                onPress={async () => {
-                  setSelectedTrackId(t.id);
-                  await hapticSelection();
-                  try { console.log('[album] Track tapped', t.id); } catch {}
-                  setQueue(tracks);
-                  await select(t, { forceAutoplay: true });
-                  await play();
-                }}
-                testID={`track-row-${idx+1}`}
-              >
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.rowTitle, selectedTrackId === t.id ? { color: baseColor } : null]} numberOfLines={1}>{t.title}</Text>
-                  <Text style={styles.rowSubtitle} numberOfLines={1}>{t.subtitle}</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
+            {tracks.map((t, idx) => {
+              const isCurrent = current?.id === t.id;
+              const isSelected = selectedTrackId === t.id;
+              const isActive = Boolean(isCurrent || isSelected);
+              return (
+                <TouchableOpacity
+                  key={t.id}
+                  style={[styles.row, isActive ? { backgroundColor: 'rgba(255,255,255,0.05)' } : null as any]}
+                  activeOpacity={0.8}
+                  onPress={async () => {
+                    setSelectedTrackId(t.id);
+                    await hapticSelection();
+                    try { console.log('[album] Track tapped', t.id); } catch {}
+                    setQueue(tracks);
+                    await select(t, { forceAutoplay: true });
+                    await play();
+                  }}
+                  testID={`track-row-${idx+1}`}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text style={[styles.rowTitle, isActive ? { color: baseColor } : null]} numberOfLines={1}>{t.title}</Text>
+                    <Text style={[styles.rowSubtitle, isActive ? { color: '#cbd5e1' } : null]} numberOfLines={1}>{t.subtitle}</Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
         </View>
       </SafeAreaView>
