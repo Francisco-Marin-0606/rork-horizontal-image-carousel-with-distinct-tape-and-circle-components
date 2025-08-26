@@ -272,7 +272,7 @@ export default function GlobalPlayerOverlay() {
   const prevTranslate = slideProg.interpolate({ inputRange: [0, 1], outputRange: [0, outTo] });
   const currTranslate = slideProg.interpolate({ inputRange: [0, 1], outputRange: [inFrom, 0] });
   const shouldAnimate = !!previous && dir !== 'none';
-  const upShift = 0;
+  const upShift = -Math.floor(imageSize * 0.5);
   const leftShift = 0;
 
   return uiOpen ? (
