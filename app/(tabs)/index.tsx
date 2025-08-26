@@ -703,9 +703,6 @@ export default function MusicPlayerScreen() {
   useEffect(() => {
     if (uiOpen) {
       if (current) setSelected(current);
-      setSheetVisible(true);
-    } else {
-      setSheetVisible(false);
     }
   }, [uiOpen, current]);
 
@@ -736,13 +733,7 @@ export default function MusicPlayerScreen() {
           </ScrollView>
         </SafeAreaView>
       </Animated.View>
-      <PlayerSheet
-        visible={sheetVisible}
-        onClose={() => { setSheetVisible(false); setUIOpen(false); }}
-        album={current}
-        imageSize={imageSize}
-        contentOpacity={contentOpacity}
-      />
+
     </View>
   );
 }
