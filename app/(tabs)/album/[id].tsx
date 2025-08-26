@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   headerRow: { paddingHorizontal: 16, paddingTop: 6, paddingBottom: 8, alignItems: 'flex-start' },
   title: { color: '#fff', fontSize: 24, fontWeight: '800' as const, marginTop: 16 },
   subtitle: { color: '#cbd5e1', fontSize: 14, marginTop: 6 },
-  ctaRow: { flexDirection: 'row', gap: 10 as unknown as number, marginTop: 28, width: '100%' },
+  ctaRow: { flexDirection: 'row', gap: 10 as unknown as number, marginTop: 28, width: '100%', paddingHorizontal: 16 },
   ctaBtn: { paddingHorizontal: 19, paddingVertical: 10, borderRadius: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
   ctaText: { color: '#e5e7eb', fontSize: 17, fontWeight: '600' as const },
   ctaFlex: { flex: 1 },
