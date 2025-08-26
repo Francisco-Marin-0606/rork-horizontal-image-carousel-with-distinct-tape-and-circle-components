@@ -123,7 +123,7 @@ export default function AlbumScreen() {
   useEffect(() => {
     try { console.log('[nav] Album mount -> fade in'); } catch {}
     entryOpacity.setValue(0);
-    Animated.timing(entryOpacity, { toValue: 1, duration: 520, easing: Easing.bezier(0.22, 1, 0.36, 1), useNativeDriver: true }).start();
+    Animated.timing(entryOpacity, { toValue: 1, duration: 240, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
   }, [entryOpacity]);
 
   return (
