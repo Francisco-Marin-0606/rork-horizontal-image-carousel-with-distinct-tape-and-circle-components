@@ -4,7 +4,6 @@ import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PlayerProvider } from "@/providers/PlayerProvider";
-import FullPlayerOverlay from "@/components/FullPlayerOverlay";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -29,7 +28,6 @@ export default function RootLayout() {
       <GestureHandlerRootView>
         <PlayerProvider>
           <RootLayoutNav />
-          <FullPlayerOverlay />
         </PlayerProvider>
       </GestureHandlerRootView>
     </QueryClientProvider>
