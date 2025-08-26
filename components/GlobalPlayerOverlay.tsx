@@ -224,10 +224,9 @@ export default function GlobalPlayerOverlay() {
     })
   ).current;
 
-  if (!current) return null;
 
   const displayPlaying = (isPlaying || optimisticPlaying);
-  const spinActive = displayPlaying && current?.id === current?.id;
+  const spinActive = displayPlaying && Boolean(current?.id);
   const prevBaseColor = previous?.color ?? '#063536';
   const currBaseColor = current?.color ?? '#EA580C';
 
