@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Animated, Image, PanResponder, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { usePlayer } from "@/providers/PlayerProvider";
 import { hapticSelection } from "@/utils/haptics";
+import { usePathname } from "expo-router";
 
 const COVER_URL_1 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers.png' as const;
 const COVER_URL_2 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers2.png' as const;
@@ -33,13 +34,26 @@ export default function StickyPlayer() {
     return () => { if (optTimer.current) clearTimeout(optTimer.current); };
   }, []);
 
+  const pathname = usePathname();
+  const isInTabs = useMemo(() => {
+    const p = pathname ?? "";
+    return p.startsWith("/") && p.split("/")[1] === "(tabs)";
+  }, [pathname]);
   const TAB_BAR_HEIGHT = 84 as const;
-  const slideY = useRef(new Animated.Value(TAB_BAR_HEIGHT + 24)).current;
+  const bottomBase = isInTabs ? (TAB_BAR_HEIGHT + 16) : 16;
+  const hiddenOffset = isInTabs ? (TAB_BAR_HEIGHT + 24) : 24;
+
+  const slideY = useRef(new Animated.Value(hiddenOffset)).current;
   const opacity = useRef(new Animated.Value(1)).current;
   const [containerHeight, setContainerHeight] = useState<number | null>(null);
   const [dismissed, setDismissed] = useState<boolean>(false);
   const dragDY = useRef(new Animated.Value(0)).current;
   const draggingRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    try { console.log('[ui] sticky route change', { pathname, isInTabs, hiddenOffset, bottomBase }); } catch {}
+    slideY.setValue(hiddenOffset);
+  }, [hiddenOffset, bottomBase, pathname, isInTabs, slideY]);
 
   useEffect(() => {
     const shouldShow = !!current && !uiOpen && !dismissed;
@@ -54,7 +68,7 @@ export default function StickyPlayer() {
       Animated.timing(slideY, { toValue: 0, duration: 350, easing: (t)=>t, useNativeDriver: true }).start();
     } else {
       Animated.parallel([
-        Animated.timing(slideY, { toValue: TAB_BAR_HEIGHT + 24, duration: 225, easing: (t)=>t, useNativeDriver: true }),
+        Animated.timing(slideY, { toValue: hiddenOffset, duration: 225, easing: (t)=>t, useNativeDriver: true }),
         Animated.timing(opacity, { toValue: 0, duration: 150, easing: (t)=>t, useNativeDriver: true }),
       ]).start();
     }
@@ -140,8 +154,8 @@ export default function StickyPlayer() {
               opacity,
               paddingVertical: 11,
               borderRadius: containerHeight ? Math.max(0, 0.15 * containerHeight) : 24,
-              bottom: TAB_BAR_HEIGHT + 16,
-              zIndex: 10,
+              bottom: bottomBase,
+              zIndex: 50,
             },
           ]}
           testID="sticky-player"
@@ -167,6 +181,7 @@ export default function StickyPlayer() {
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             style={{ marginRight: 28 }}
             testID="sticky-prev"
+            accessibilityLabel="Anterior"
           >
             <Image
               source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/FlechasPlayer.png' }}
@@ -188,6 +203,7 @@ export default function StickyPlayer() {
             }}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             testID="sticky-toggle"
+            accessibilityLabel={displayPlaying ? "Pausar" : "Reproducir"}
           >
             {displayPlaying ? (
               <Image
@@ -216,6 +232,7 @@ export default function StickyPlayer() {
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             style={{ marginLeft: 28, marginRight: 12 }}
             testID="sticky-next"
+            accessibilityLabel="Siguiente"
           >
             <Image
               source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/FlechasPlayer.png' }}
