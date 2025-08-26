@@ -158,7 +158,7 @@ export default function AlbumScreen() {
             {tracks.map((t, idx) => (
               <TouchableOpacity
                 key={t.id}
-                style={[styles.row, selectedTrackId === t.id ? { backgroundColor: baseColor } : null]}
+                style={[styles.row]}
                 activeOpacity={0.8}
                 onPress={async () => {
                   setSelectedTrackId(t.id);
@@ -169,7 +169,7 @@ export default function AlbumScreen() {
                 testID={`track-row-${idx+1}`}
               >
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.rowTitle} numberOfLines={1}>{t.title}</Text>
+                  <Text style={[styles.rowTitle, selectedTrackId === t.id ? { color: baseColor } : null]} numberOfLines={1}>{t.title}</Text>
                   <Text style={styles.rowSubtitle} numberOfLines={1}>{t.subtitle}</Text>
                 </View>
               </TouchableOpacity>
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   title: { color: '#fff', fontSize: 24, fontWeight: '800' as const, marginTop: 16 },
   subtitle: { color: '#cbd5e1', fontSize: 14, marginTop: 6 },
   ctaRow: { flexDirection: 'row', gap: 10 as unknown as number, marginTop: 14, width: '100%' },
-  ctaBtn: { paddingHorizontal: 19, paddingVertical: 10, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
+  ctaBtn: { paddingHorizontal: 19, paddingVertical: 10, borderRadius: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
   ctaText: { color: '#e5e7eb', fontSize: 17, fontWeight: '600' as const },
   ctaFlex: { flex: 1 },
   ctaTextWithIcon: { marginLeft: 8 },
