@@ -13,7 +13,9 @@ export default function StickyPlayer() {
   const { current, previous, changeDirection, userPaused, isPlaying, next, prev, uiOpen, setUIOpen, pause, play } = usePlayer();
 
   const coverUrl = useMemo(() => {
-    const n = Number(current?.id ?? '');
+    const raw = current?.id ?? '';
+    const base = raw ? String(raw).split('-')[0] : '';
+    const n = Number(base);
     if (Number.isFinite(n)) {
       const idx = ((n - 1) % 3 + 3) % 3;
       return [COVER_URL_1, COVER_URL_2, COVER_URL_3][idx];

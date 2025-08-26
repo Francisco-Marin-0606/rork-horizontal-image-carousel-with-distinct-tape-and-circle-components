@@ -250,12 +250,16 @@ export default function GlobalPlayerOverlay() {
   const currColor = useMemo(() => darkenColor(currBaseColor, 0.5), [currBaseColor, darkenColor]);
 
   const getVinylUrlById = (id?: string | null) => {
-    const n = Number(id);
+    const raw = id ?? '';
+    const base = raw ? String(raw).split('-')[0] : '';
+    const n = Number(base);
     if (Number.isFinite(n)) return n % 2 === 0 ? VINYL_URL_2 : VINYL_URL_1;
     return VINYL_URL_1;
   };
   const getCoverUrlById = (id?: string | null) => {
-    const n = Number(id);
+    const raw = id ?? '';
+    const base = raw ? String(raw).split('-')[0] : '';
+    const n = Number(base);
     if (Number.isFinite(n)) {
       const idx = ((n - 1) % 3 + 3) % 3;
       return [COVER_URL_1, COVER_URL_2, COVER_URL_3][idx];
