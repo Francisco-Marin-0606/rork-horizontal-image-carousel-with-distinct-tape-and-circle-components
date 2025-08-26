@@ -123,7 +123,7 @@ export default function AlbumScreen() {
   useEffect(() => {
     try { console.log('[nav] Album mount -> fade in'); } catch {}
     entryOpacity.setValue(0);
-    Animated.timing(entryOpacity, { toValue: 1, duration: 520, easing: Easing.bezier(0.22, 1, 0.36, 1), useNativeDriver: true }).start();
+    Animated.timing(entryOpacity, { toValue: 1, duration: 420, easing: Easing.bezier(0.22, 1, 0.36, 1), useNativeDriver: true }).start();
   }, [entryOpacity]);
 
   return (
@@ -138,7 +138,17 @@ export default function AlbumScreen() {
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 1, paddingLeft: SIDE_MARGIN, paddingRight: SIDE_MARGIN }}>
           <View style={[styles.headerRow, { paddingLeft: 0, paddingRight: 0 }] }>
-            <TouchableOpacity accessibilityRole="button" testID="btn-back" style={{ padding: 8, marginLeft: -8 }} onPress={async () => { await hapticSelection(); router.back(); }}>
+            <TouchableOpacity accessibilityRole="button" testID="btn-back" style={{ padding: 8, marginLeft: -8 }} onPress={async () => {
+                await hapticSelection();
+                try { console.log('[nav] Album back -> fade out'); } catch {}
+                Animated.timing(entryOpacity, { toValue: 0, duration: 420, easing: Easing.bezier(0.22, 1, 0.36, 1), useNativeDriver: true }).start(({ finished }) => {
+                  if (finished) {
+                    router.back();
+                  } else {
+                    router.back();
+                  }
+                });
+              }}>
               <Image
                 source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/FlechaRetrocederV2.png' }}
                 style={{ width: 22, height: 22 }}
