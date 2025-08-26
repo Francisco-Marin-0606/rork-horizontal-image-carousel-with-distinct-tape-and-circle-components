@@ -727,7 +727,7 @@ export default function MusicPlayerScreen() {
           >
             <CarouselSection title="Para ti" data={forYouData} imageSize={imageSize} topSpacing={16} onSelect={async (a) => { await hapticSelection(); handleSelect(a); }} />
             <CarouselSection title="Instrumentales" data={instrumentalData} imageSize={imageSize} bottomSpacing={24} onSelect={async (a) => { await hapticSelection(); router.push({ pathname: '/album/[id]', params: { id: a.id, title: a.title, subtitle: a.subtitle, color: a.color ?? '#111827', audioUrl: a.audioUrl ?? '' } }); }} />
-            <CarouselSection title="Instrumentales" data={extraData} imageSize={imageSize} onSelect={async (a) => { await hapticSelection(); router.push({ pathname: '/album/[id]', params: { id: a.id, title: a.title, subtitle: a.subtitle, color: a.color ?? '#111827', audioUrl: a.audioUrl ?? '' } }); }} />
+            <CarouselSection title="" data={extraData} imageSize={imageSize} onSelect={async (a) => { await hapticSelection(); router.push({ pathname: '/album/[id]', params: { id: a.id, title: a.title, subtitle: a.subtitle, color: a.color ?? '#111827', audioUrl: a.audioUrl ?? '' } }); }} />
           </ScrollView>
         </SafeAreaView>
       </Animated.View>
