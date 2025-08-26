@@ -264,7 +264,7 @@ export default function GlobalPlayerOverlay() {
   };
 
   const baseImageSize = Math.max(120, Math.floor(Math.min(screenWidth * 0.72, 360)));
-  const imageSize = Math.floor(baseImageSize * 0.5);
+  const imageSize = Math.floor(baseImageSize * 0.575);
   const imageOffsetDown = Math.floor(imageSize * 0.03);
   const dir = changeDirection;
   const outTo = dir === 'next' ? -screenWidth : screenWidth;
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
   centerTextBlock: { marginTop: 12, alignItems: 'flex-start', paddingHorizontal: 0 },
   centerTitle: { color: '#fff', fontSize: 28, fontWeight: '800', textAlign: 'left' },
   centerSubtitle: { color: '#94a3b8', fontSize: 16, lineHeight: 18, marginTop: 6, textAlign: 'left' },
-  controlsRow: { position: 'absolute', left: 0, right: 0, bottom: 140, alignItems: 'center', justifyContent: 'center' },
+  controlsRow: { position: 'absolute', left: 0, right: 0, bottom: 200, alignItems: 'center', justifyContent: 'center' },
   playButton: { alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' },
   coverRow: { paddingHorizontal: 0 },
   moreFab: { position: 'absolute', right: 24, bottom: 28, width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.04)', alignItems: 'center', justifyContent: 'center', flexDirection: 'row' },
