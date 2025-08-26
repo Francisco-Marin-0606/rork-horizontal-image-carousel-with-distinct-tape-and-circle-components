@@ -125,7 +125,7 @@ export default function StickyPlayer() {
   if (!current) return null;
 
   return (
-    <View pointerEvents="box-none" style={StyleSheet.absoluteFill}>
+    <View pointerEvents="box-none" style={styles.overlay}>
       <AnimatedPressable
           {...panResponder.panHandlers}
           onPress={async () => { if (draggingRef.current) return; try { console.log('[ui] sticky open player'); } catch {}; await hapticSelection(); setUIOpen(true); }}
@@ -145,6 +145,8 @@ export default function StickyPlayer() {
             },
           ]}
           testID="sticky-player"
+          accessibilityElementsHidden={false}
+          importantForAccessibility="yes"
         >
         <View style={styles.leftRow}>
           <Image
@@ -231,6 +233,7 @@ export default function StickyPlayer() {
 }
 
 const styles = StyleSheet.create({
+  overlay: { ...StyleSheet.absoluteFillObject, zIndex: 9999, ...(Platform.OS !== 'web' ? { elevation: 9999 } : null as any) },
   container: {
     position: 'absolute',
     left: 16,
