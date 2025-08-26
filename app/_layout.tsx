@@ -4,8 +4,6 @@ import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PlayerProvider } from "@/providers/PlayerProvider";
-import StickyPlayer from "@/components/StickyPlayer";
-import { View, StyleSheet } from "react-native";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -27,18 +25,11 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView>
         <PlayerProvider>
-          <View style={styles.root}>
-            <RootLayoutNav />
-            <StickyPlayer />
-          </View>
+          <RootLayoutNav />
         </PlayerProvider>
       </GestureHandlerRootView>
     </QueryClientProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#000" },
-});
