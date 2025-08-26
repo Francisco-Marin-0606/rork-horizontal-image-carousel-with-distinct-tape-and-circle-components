@@ -11,6 +11,8 @@ import { Play, Shuffle } from 'lucide-react-native';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
+const PLAY_ICON_URL: string | null = null;
+
 const VINYL_URL_1 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Vinilo1.png' as const;
 const VINYL_URL_2 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Vinilo2.png' as const;
 const COVER_URL_1 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers.png' as const;
@@ -129,17 +131,21 @@ export default function AlbumScreen() {
                   testID="btn-play"
                   accessibilityRole="button"
                   accessibilityLabel="Reproducir"
-                  style={[styles.ctaBtn, styles.ctaFullWidth, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
+                  style={[styles.ctaBtn, styles.ctaFlex, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
                   onPress={async () => { await hapticImpact('medium'); await select(album, { forceAutoplay: true }); await play(); }}
                 >
-                  <Play color="#e5e7eb" size={20} />
+                  {PLAY_ICON_URL ? (
+                    <Image source={{ uri: PLAY_ICON_URL }} style={{ width: 20, height: 20, tintColor: '#e5e7eb' as const }} />
+                  ) : (
+                    <Play color="#e5e7eb" size={20} />
+                  )}
                   <Text style={[styles.ctaText, styles.ctaTextWithIcon]}>Reproducir</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   testID="btn-shuffle"
                   accessibilityRole="button"
                   accessibilityLabel="Aleatorio"
-                  style={[styles.ctaBtn, styles.ctaFullWidth, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
+                  style={[styles.ctaBtn, styles.ctaFlex, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
                   onPress={async () => { await hapticImpact('light'); const anyTrack = tracks[Math.floor(Math.random() * tracks.length)]; await select(album, { forceAutoplay: true }); await play(); }}
                 >
                   <Shuffle color="#e5e7eb" size={20} />
@@ -180,10 +186,10 @@ const styles = StyleSheet.create({
   headerRow: { paddingHorizontal: 16, paddingTop: 6, paddingBottom: 8, alignItems: 'flex-start' },
   title: { color: '#fff', fontSize: 24, fontWeight: '800' as const, marginTop: 16 },
   subtitle: { color: '#cbd5e1', fontSize: 14, marginTop: 6 },
-  ctaRow: { flexDirection: 'column', gap: 10 as unknown as number, marginTop: 14, width: '100%' },
+  ctaRow: { flexDirection: 'row', gap: 10 as unknown as number, marginTop: 14, width: '100%' },
   ctaBtn: { paddingHorizontal: 19, paddingVertical: 10, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
   ctaText: { color: '#e5e7eb', fontSize: 17, fontWeight: '600' as const },
-  ctaFullWidth: { width: '100%' },
+  ctaFlex: { flex: 1 },
   ctaTextWithIcon: { marginLeft: 8 },
   listDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.06)', marginTop: 18, marginBottom: 8 },
   row: { paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(255,255,255,0.06)', flexDirection: 'row', alignItems: 'center' },
