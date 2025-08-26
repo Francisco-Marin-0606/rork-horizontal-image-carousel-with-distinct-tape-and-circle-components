@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { View, StyleSheet } from "react-native";
 import { PlayerProvider } from "@/providers/PlayerProvider";
 import GlobalPlayerOverlay from "@/components/GlobalPlayerOverlay";
+import StickyPlayer from "@/components/StickyPlayer";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -31,6 +32,7 @@ export default function RootLayout() {
         <PlayerProvider>
           <View style={styles.root}>
             <RootLayoutNav />
+            <StickyPlayer />
             <GlobalPlayerOverlay />
           </View>
         </PlayerProvider>
