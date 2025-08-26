@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
 import { hapticImpact, hapticSelection } from "@/utils/haptics";
 import { usePlayer } from "@/providers/PlayerProvider";
 import type { AlbumData } from "@/types/music";
@@ -665,6 +666,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
 }
 
 export default function MusicPlayerScreen() {
+  const router = useRouter();
   const [contentHeight, setContentHeight] = useState<number>(Math.max(screenHeight - 160, 400));
   const [selected, setSelected] = useState<AlbumData | null>(null);
   const [sheetVisible, setSheetVisible] = useState<boolean>(false);
@@ -729,7 +731,7 @@ export default function MusicPlayerScreen() {
             testID="vertical-scroll"
           >
             <CarouselSection title="Para ti" data={forYouData} imageSize={imageSize} topSpacing={16} onSelect={async (a) => { await hapticSelection(); handleSelect(a); }} />
-            <CarouselSection title="Instrumental" data={instrumentalData} imageSize={imageSize} bottomSpacing={24} onSelect={async (a) => { await hapticSelection(); handleSelect(a); }} />
+            <CarouselSection title="Instrumental" data={instrumentalData} imageSize={imageSize} bottomSpacing={24} onSelect={async (a) => { await hapticSelection(); router.push({ pathname: '/album/[id]', params: { id: a.id } }); }} />
             <CarouselSection title="" data={extraData} imageSize={imageSize} onSelect={async (a) => { await hapticSelection(); handleSelect(a); }} />
           </ScrollView>
         </SafeAreaView>
