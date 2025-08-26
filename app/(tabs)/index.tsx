@@ -695,13 +695,7 @@ export default function MusicPlayerScreen() {
     return adjusted;
   }, [contentHeight]);
 
-  const sharedQueue = useMemo<AlbumData[]>(() => {
-    return [...instrumentalData, ...extraData];
-  }, []);
-
-  useEffect(() => {
-    setQueue([...forYouData, ...sharedQueue]);
-  }, [setQueue, sharedQueue]);
+  
 
   useEffect(() => {
     if (uiOpen) {
@@ -711,6 +705,7 @@ export default function MusicPlayerScreen() {
 
   const handleSelect = useCallback((a: AlbumData) => {
     setSelected(a);
+    setQueue(forYouData);
     select(a, { forceAutoplay: true }).catch(() => {});
     setSheetVisible(true);
     setUIOpen(true);
@@ -731,8 +726,8 @@ export default function MusicPlayerScreen() {
             testID="vertical-scroll"
           >
             <CarouselSection title="Para ti" data={forYouData} imageSize={imageSize} topSpacing={16} onSelect={async (a) => { await hapticSelection(); handleSelect(a); }} />
-            <CarouselSection title="Instrumental" data={instrumentalData} imageSize={imageSize} bottomSpacing={24} onSelect={async (a) => { await hapticSelection(); router.push({ pathname: '/album/[id]', params: { id: a.id, title: a.title, subtitle: a.subtitle, color: a.color ?? '#111827', audioUrl: a.audioUrl ?? '' } }); }} />
-            <CarouselSection title="" data={extraData} imageSize={imageSize} onSelect={async (a) => { await hapticSelection(); handleSelect(a); }} />
+            <CarouselSection title="Instrumentales" data={instrumentalData} imageSize={imageSize} bottomSpacing={24} onSelect={async (a) => { await hapticSelection(); router.push({ pathname: '/album/[id]', params: { id: a.id, title: a.title, subtitle: a.subtitle, color: a.color ?? '#111827', audioUrl: a.audioUrl ?? '' } }); }} />
+            <CarouselSection title="Instrumentales" data={extraData} imageSize={imageSize} onSelect={async (a) => { await hapticSelection(); router.push({ pathname: '/album/[id]', params: { id: a.id, title: a.title, subtitle: a.subtitle, color: a.color ?? '#111827', audioUrl: a.audioUrl ?? '' } }); }} />
           </ScrollView>
         </SafeAreaView>
       </Animated.View>
