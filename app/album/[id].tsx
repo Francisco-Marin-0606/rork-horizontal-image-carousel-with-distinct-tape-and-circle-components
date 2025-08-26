@@ -96,6 +96,8 @@ export default function AlbumScreen() {
 
   const baseColor = album.color ?? '#111827';
 
+  const SIDE_MARGIN = Math.floor(screenWidth * 0.2);
+
   return (
     <View style={styles.root} testID="album-screen-root">
       <LinearGradient
@@ -106,50 +108,52 @@ export default function AlbumScreen() {
         style={StyleSheet.absoluteFill}
       />
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.headerRow}>
-          <TouchableOpacity accessibilityRole="button" testID="btn-back" onPress={async () => { await hapticSelection(); router.back(); }}>
-            <Image source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/FlechasPlayer.png' }} style={{ width: 28, height: 28, tintColor: '#fff' as const, transform: [{ scaleX: -1 }] }} />
-          </TouchableOpacity>
-        </View>
-        <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
-          <View style={{ alignItems: 'center', marginTop: 12 }}>
-            <View style={{ width: imageSize, height: imageSize }}>
-              <Animated.Image source={{ uri: getVinylUrlById(album.id) }} style={{ position: 'absolute', width: Math.floor(imageSize * 0.7), height: Math.floor(imageSize * 0.7), left: Math.floor(imageSize - (imageSize*0.7)/2), top: Math.floor((imageSize - (imageSize*0.7))/2), transform: [{ rotate }] }} resizeMode="contain" />
-              <Image source={{ uri: getCoverUrlById(album.id) }} style={{ width: imageSize, height: imageSize, borderRadius: 14 }} resizeMode="cover" />
-            </View>
-            <Text style={styles.title} numberOfLines={2} testID="album-title">{album.title}</Text>
-            <Text style={styles.subtitle} numberOfLines={1}>{'18 Hz - Ondas Beta'}</Text>
-            <View style={styles.ctaRow}>
-              <TouchableOpacity testID="btn-play" accessibilityRole="button" style={[styles.ctaBtn, { backgroundColor: 'rgba(255,255,255,0.12)' }]} onPress={async () => { await hapticImpact('medium'); await select(album, { forceAutoplay: true }); await play(); }}>
-                <Text style={styles.ctaText}>Reproducir</Text>
-              </TouchableOpacity>
-              <TouchableOpacity testID="btn-shuffle" accessibilityRole="button" style={[styles.ctaBtn, { backgroundColor: 'rgba(255,255,255,0.12)' }]} onPress={async () => { await hapticImpact('light'); const anyTrack = tracks[Math.floor(Math.random() * tracks.length)]; await select(album, { forceAutoplay: true }); await play(); }}>
-                <Text style={styles.ctaText}>Aleatorio</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.listDivider} />
-          {tracks.map((t, idx) => (
-            <TouchableOpacity
-              key={t.id}
-              style={[styles.row, selectedTrackId === t.id ? { backgroundColor: baseColor } : null]}
-              activeOpacity={0.8}
-              onPress={async () => {
-                setSelectedTrackId(t.id);
-                await hapticSelection();
-                await select(album, { forceAutoplay: true });
-                await play();
-              }}
-              testID={`track-row-${idx+1}`}
-            >
-              <View style={{ flex: 1 }}>
-                <Text style={styles.rowTitle} numberOfLines={1}>{t.title}</Text>
-                <Text style={styles.rowSubtitle} numberOfLines={1}>{t.subtitle}</Text>
-              </View>
+        <View style={{ flex: 1, paddingLeft: SIDE_MARGIN, paddingRight: SIDE_MARGIN }}>
+          <View style={[styles.headerRow, { paddingLeft: 0, paddingRight: 0 }] }>
+            <TouchableOpacity accessibilityRole="button" testID="btn-back" onPress={async () => { await hapticSelection(); router.back(); }}>
+              <Image source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/FlechasPlayer.png' }} style={{ width: 28, height: 28, tintColor: '#fff' as const, transform: [{ scaleX: -1 }] }} />
             </TouchableOpacity>
-          ))}
-        </ScrollView>
+          </View>
+          <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+            <View style={{ alignItems: 'center', marginTop: 12 }}>
+              <View style={{ width: imageSize, height: imageSize }}>
+                <Animated.Image source={{ uri: getVinylUrlById(album.id) }} style={{ position: 'absolute', width: Math.floor(imageSize * 0.7), height: Math.floor(imageSize * 0.7), left: Math.floor(imageSize - (imageSize*0.7)/2), top: Math.floor((imageSize - (imageSize*0.7))/2), transform: [{ rotate }] }} resizeMode="contain" />
+                <Image source={{ uri: getCoverUrlById(album.id) }} style={{ width: imageSize, height: imageSize, borderRadius: 14 }} resizeMode="cover" />
+              </View>
+              <Text style={styles.title} numberOfLines={2} testID="album-title">{album.title}</Text>
+              <Text style={styles.subtitle} numberOfLines={1}>{'18 Hz - Ondas Beta'}</Text>
+              <View style={styles.ctaRow}>
+                <TouchableOpacity testID="btn-play" accessibilityRole="button" style={[styles.ctaBtn, { backgroundColor: 'rgba(255,255,255,0.12)' }]} onPress={async () => { await hapticImpact('medium'); await select(album, { forceAutoplay: true }); await play(); }}>
+                  <Text style={styles.ctaText}>Reproducir</Text>
+                </TouchableOpacity>
+                <TouchableOpacity testID="btn-shuffle" accessibilityRole="button" style={[styles.ctaBtn, { backgroundColor: 'rgba(255,255,255,0.12)' }]} onPress={async () => { await hapticImpact('light'); const anyTrack = tracks[Math.floor(Math.random() * tracks.length)]; await select(album, { forceAutoplay: true }); await play(); }}>
+                  <Text style={styles.ctaText}>Aleatorio</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.listDivider} />
+            {tracks.map((t, idx) => (
+              <TouchableOpacity
+                key={t.id}
+                style={[styles.row, selectedTrackId === t.id ? { backgroundColor: baseColor } : null]}
+                activeOpacity={0.8}
+                onPress={async () => {
+                  setSelectedTrackId(t.id);
+                  await hapticSelection();
+                  await select(album, { forceAutoplay: true });
+                  await play();
+                }}
+                testID={`track-row-${idx+1}`}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.rowTitle} numberOfLines={1}>{t.title}</Text>
+                  <Text style={styles.rowSubtitle} numberOfLines={1}>{t.subtitle}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
       </SafeAreaView>
     </View>
   );
