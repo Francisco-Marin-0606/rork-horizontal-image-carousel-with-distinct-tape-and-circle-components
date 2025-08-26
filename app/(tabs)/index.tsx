@@ -68,8 +68,8 @@ const WaveText: React.FC<WaveTextProps> = React.memo(({ text, style, delayPerWor
       Animated.timing(v, { toValue: 1, duration, delay: i * delayPerWord, easing: Easing.bezier(0.22, 1, 0.36, 1), useNativeDriver: true })
     );
     running.current = animations;
-    Animated.stagger(Math.max(10, Math.floor(delayPerWord * 0.6)), animations).start(({ finished }) => {
-      if (finished) running.current = null;
+    Animated.stagger(Math.max(10, Math.floor(delayPerWord * 0.6)), animations).start((res) => {
+      if (res.finished) running.current = null;
     });
 
     return () => {
@@ -299,8 +299,8 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
       Animated.timing(translateY, { toValue: sheetHeight, duration: Math.floor(1065 * 0.7), easing: smoothIn, useNativeDriver: true }),
       Animated.timing(backdrop, { toValue: 0, duration: Math.floor(983 * 0.7), easing: smoothIn, useNativeDriver: true }),
       Animated.timing(contentOpacity, { toValue: 1, duration: Math.floor(983 * 0.7), easing: smoothIn, useNativeDriver: false }),
-    ]).start(({ finished }) => {
-      if (finished) onClose();
+    ]).start((res) => {
+      if (res.finished) onClose();
     });
   }, [translateY, backdrop, onClose, sheetHeight, contentOpacity]);
 
@@ -690,7 +690,7 @@ function AlbumSlideInPanel({ visible, album, onClose, imageSize, contentOpacity 
       Animated.timing(translateX, { toValue: screenWidth, duration: 420, easing: smooth, useNativeDriver: true }),
       Animated.timing(backdrop, { toValue: 0, duration: 360, easing: smooth, useNativeDriver: true }),
       Animated.timing(contentOpacity, { toValue: 1, duration: 360, easing: smooth, useNativeDriver: false }),
-    ]).start(({ finished }) => { if (finished) onClose(); });
+    ]).start((res) => { if (res.finished) onClose(); });
   }, [translateX, backdrop, onClose, contentOpacity]);
 
   useEffect(() => { if (visible) open(); }, [visible, open]);
