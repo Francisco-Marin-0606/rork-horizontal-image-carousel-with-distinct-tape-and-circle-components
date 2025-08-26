@@ -61,12 +61,18 @@ export default function AlbumScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const idParam = (params.id as string) ?? '';
-  const { queue, select, current, isPlaying, play } = usePlayer();
+  const { queue, select, current, isPlaying, play, setQueue, setUIOpen } = usePlayer();
 
-  const album = useMemo<AlbumData | null>(() => {
+  const albumFromQueue = useMemo<AlbumData | null>(() => {
     const base = queue.find(a => a.id === idParam) ?? null;
     return base;
   }, [queue, idParam]);
+
+  const [albumSnapshot, setAlbumSnapshot] = useState<AlbumData | null>(null);
+  React.useEffect(() => {
+    if (!albumSnapshot && albumFromQueue) setAlbumSnapshot(albumFromQueue);
+  }, [albumSnapshot, albumFromQueue]);
+  const album = albumSnapshot ?? albumFromQueue;
 
   const tracks = useMemo<AlbumData[]>(() => (album ? inventedTracks(album) : []), [album]);
 
@@ -132,7 +138,16 @@ export default function AlbumScreen() {
                   accessibilityRole="button"
                   accessibilityLabel="Reproducir"
                   style={[styles.ctaBtn, styles.ctaFlex, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
-                  onPress={async () => { await hapticImpact('medium'); await select(album, { forceAutoplay: true }); await play(); }}
+                  onPress={async () => {
+                    try { console.log('[album] Play button pressed'); } catch {}
+                    await hapticImpact('medium');
+                    if (tracks.length > 0) {
+                      setQueue(tracks);
+                      await select(tracks[0], { forceAutoplay: true });
+                      await play();
+                      setUIOpen(true);
+                    }
+                  }}
                 >
                   {PLAY_ICON_URL ? (
                     <Image source={{ uri: PLAY_ICON_URL }} style={{ width: 20, height: 20, tintColor: '#e5e7eb' as const }} />
@@ -146,7 +161,17 @@ export default function AlbumScreen() {
                   accessibilityRole="button"
                   accessibilityLabel="Aleatorio"
                   style={[styles.ctaBtn, styles.ctaFlex, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
-                  onPress={async () => { await hapticImpact('light'); const anyTrack = tracks[Math.floor(Math.random() * tracks.length)]; await select(album, { forceAutoplay: true }); await play(); }}
+                  onPress={async () => {
+                    try { console.log('[album] Shuffle button pressed'); } catch {}
+                    await hapticImpact('light');
+                    if (tracks.length > 0) {
+                      const anyTrack = tracks[Math.floor(Math.random() * tracks.length)];
+                      setQueue(tracks);
+                      await select(anyTrack, { forceAutoplay: true });
+                      await play();
+                      setUIOpen(true);
+                    }
+                  }}
                 >
                   <Shuffle color="#e5e7eb" size={20} />
                   <Text style={[styles.ctaText, styles.ctaTextWithIcon]}>Aleatorio</Text>
@@ -163,8 +188,11 @@ export default function AlbumScreen() {
                 onPress={async () => {
                   setSelectedTrackId(t.id);
                   await hapticSelection();
-                  await select(album, { forceAutoplay: true });
+                  try { console.log('[album] Track tapped', t.id); } catch {}
+                  setQueue(tracks);
+                  await select(t, { forceAutoplay: true });
                   await play();
+                  setUIOpen(true);
                 }}
                 testID={`track-row-${idx+1}`}
               >
