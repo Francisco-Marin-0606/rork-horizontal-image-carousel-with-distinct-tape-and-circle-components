@@ -192,7 +192,6 @@ export default function AlbumScreen() {
                   setQueue(tracks);
                   await select(t, { forceAutoplay: true });
                   await play();
-                  setUIOpen(true);
                 }}
                 testID={`track-row-${idx+1}`}
               >
