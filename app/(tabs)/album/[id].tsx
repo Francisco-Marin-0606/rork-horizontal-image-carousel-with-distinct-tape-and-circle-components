@@ -91,7 +91,8 @@ export default function AlbumScreen() {
   const imageSize = Math.floor(imageBase * 0.72);
 
   const spin = useRef(new Animated.Value(0)).current;
-  const spinActive = isPlaying && current?.id === album?.id;
+  const getBaseId = (id?: string | null) => (id ? String(id).split('-')[0] : '');
+  const spinActive = isPlaying && getBaseId(current?.id) === getBaseId(album?.id);
   React.useEffect(() => {
     if (spinActive) {
       const loop = Animated.loop(Animated.timing(spin, { toValue: 1, duration: 6000, easing: Easing.linear, useNativeDriver: true }));

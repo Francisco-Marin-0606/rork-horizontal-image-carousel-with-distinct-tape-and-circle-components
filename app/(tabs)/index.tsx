@@ -103,6 +103,9 @@ const COVER_URL_1 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/M
 const COVER_URL_2 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers2.png' as const;
 const COVER_URL_3 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers1.png' as const;
 
+const getBaseId = (id?: string | null) => (id ? String(id).split('-')[0] : '');
+const isSameAlbum = (a?: string | null, b?: string | null) => getBaseId(a) === getBaseId(b);
+
 const CoverWithVinyl: React.FC<{ imageSize: number; spinActive?: boolean; vinylUrl?: string; coverUrl?: string }> = React.memo(({ imageSize, spinActive, vinylUrl, coverUrl }) => {
   const vinylSize = useMemo(() => {
     const size = Math.floor(imageSize * 0.7);
@@ -163,7 +166,7 @@ const CoverWithVinyl: React.FC<{ imageSize: number; spinActive?: boolean; vinylU
 
 const AlbumCard: React.FC<AlbumCardProps> = React.memo(({ album, imageSize, onPress }) => {
   const { isPlaying, current } = usePlayer();
-  const spinActive = isPlaying && current?.id === album.id;
+  const spinActive = isPlaying && isSameAlbum(current?.id, album.id);
   const nId = Number(album.id);
   const coverUrl = Number.isFinite(nId)
     ? [COVER_URL_1, COVER_URL_2, COVER_URL_3][((nId - 1) % 3 + 3) % 3]
@@ -439,7 +442,7 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
 
   const opacity = backdrop.interpolate({ inputRange: [0, 1], outputRange: [0, 1] });
   const displayPlaying = (isPlaying || optimisticPlaying);
-  const spinActive = displayPlaying && current?.id === album?.id;
+  const spinActive = displayPlaying && isSameAlbum(current?.id, album?.id ?? null);
   const prevBaseColor = previous?.color ?? '#063536';
   const currBaseColor = album?.color ?? '#EA580C';
 
