@@ -264,7 +264,7 @@ export default function GlobalPlayerOverlay() {
   };
 
   const imageBase = Math.min(320, Math.floor(screenWidth * 0.68));
-  const imageSize = Math.floor(imageBase * 0.72 * 1.5);
+  const imageSize = Math.floor(imageBase * 0.72);
   const imageOffsetDown = 0;
   const dir = changeDirection;
   const outTo = dir === 'next' ? -screenWidth : screenWidth;
