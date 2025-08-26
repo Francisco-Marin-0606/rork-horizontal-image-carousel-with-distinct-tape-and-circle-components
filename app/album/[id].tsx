@@ -66,7 +66,8 @@ export default function AlbumScreen() {
 
   const tracks = useMemo<AlbumData[]>(() => (album ? inventedTracks(album) : []), [album]);
 
-  const imageSize = Math.min(320, Math.floor(screenWidth * 0.68));
+  const imageBase = Math.min(320, Math.floor(screenWidth * 0.68));
+  const imageSize = Math.floor(imageBase * 0.6);
 
   const spin = useRef(new Animated.Value(0)).current;
   const spinActive = isPlaying && current?.id === album?.id;
@@ -83,6 +84,8 @@ export default function AlbumScreen() {
   }, [spinActive, spin]);
   const rotate = spin.interpolate({ inputRange: [0,1], outputRange: ['0deg','360deg'] });
 
+  const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
+
   if (!album) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#000', alignItems: 'center', justifyContent: 'center' }}>
@@ -96,8 +99,8 @@ export default function AlbumScreen() {
   return (
     <View style={styles.root} testID="album-screen-root">
       <LinearGradient
-        colors={[baseColor, baseColor, '#000']}
-        locations={[0, 0.02, 1]}
+        colors={[baseColor, '#000000', '#000000']}
+        locations={[0, 0.5, 1]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         style={StyleSheet.absoluteFill}
@@ -130,9 +133,10 @@ export default function AlbumScreen() {
           {tracks.map((t, idx) => (
             <TouchableOpacity
               key={t.id}
-              style={styles.row}
+              style={[styles.row, selectedTrackId === t.id ? { backgroundColor: baseColor } : null]}
               activeOpacity={0.8}
               onPress={async () => {
+                setSelectedTrackId(t.id);
                 await hapticSelection();
                 await select(album, { forceAutoplay: true });
                 await play();
