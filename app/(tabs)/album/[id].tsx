@@ -130,8 +130,12 @@ export default function AlbumScreen() {
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ flex: 1, paddingLeft: SIDE_MARGIN, paddingRight: SIDE_MARGIN }}>
           <View style={[styles.headerRow, { paddingLeft: 0, paddingRight: 0 }] }>
-            <TouchableOpacity accessibilityRole="button" testID="btn-back" onPress={async () => { await hapticSelection(); router.back(); }}>
-              <Image source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/flehcaRetroceder.png' }} style={{ width: 18, height: 18 }} />
+            <TouchableOpacity accessibilityRole="button" testID="btn-back" style={{ padding: 8, marginLeft: -8 }} onPress={async () => { await hapticSelection(); router.back(); }}>
+              <Image
+                source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/FlechaRetrocederV2.png' }}
+                style={{ width: 22, height: 22 }}
+                resizeMode="contain"
+              />
             </TouchableOpacity>
           </View>
           <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
