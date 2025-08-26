@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView, Animated, Easing, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -6,7 +6,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePlayer } from '@/providers/PlayerProvider';
 import type { AlbumData } from '@/types/music';
 import { hapticImpact, hapticSelection } from '@/utils/haptics';
-import PlayerSheet from '@/components/PlayerSheet';
 
 import { Play, Shuffle } from 'lucide-react-native';
 
@@ -62,7 +61,7 @@ export default function AlbumScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const idParam = (params.id as string) ?? '';
-  const { queue, select, current, isPlaying, play, setQueue, setUIOpen, uiOpen } = usePlayer();
+  const { queue, select, current, isPlaying, play, setQueue, setUIOpen } = usePlayer();
 
   const albumFromQueue = useMemo<AlbumData | null>(() => {
     const base = queue.find(a => a.id === idParam) ?? null;
@@ -96,18 +95,6 @@ export default function AlbumScreen() {
   const rotate = spin.interpolate({ inputRange: [0,1], outputRange: ['0deg','360deg'] });
 
   const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
-  const [sheetVisible, setSheetVisible] = useState<boolean>(false);
-  const contentOpacity = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    if (uiOpen) {
-      if (current) setAlbumSnapshot(current);
-      setSheetVisible(true);
-    } else {
-      setSheetVisible(false);
-      contentOpacity.setValue(1);
-    }
-  }, [uiOpen, current, contentOpacity]);
 
   if (!album) {
     return (
@@ -117,7 +104,7 @@ export default function AlbumScreen() {
     );
   }
 
-  const baseColor = album?.color ?? '#111827';
+  const baseColor = album.color ?? '#111827';
 
   const SIDE_MARGIN = Math.floor(screenWidth * 0.05);
 
@@ -137,8 +124,7 @@ export default function AlbumScreen() {
               <Image source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/FlechasPlayer.png' }} style={{ width: 28, height: 28, tintColor: '#fff' as const, transform: [{ scaleX: -1 }] }} />
             </TouchableOpacity>
           </View>
-          <Animated.View style={{ flex: 1, opacity: contentOpacity }}>
-            <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+          <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
             <View style={{ alignItems: 'center', marginTop: 12 }}>
               <View style={{ width: imageSize, height: imageSize }}>
                 <Animated.Image source={{ uri: getVinylUrlById(album.id) }} style={{ position: 'absolute', width: Math.floor(imageSize * 0.7), height: Math.floor(imageSize * 0.7), left: Math.floor(imageSize - (imageSize*0.7)/2), top: Math.floor((imageSize - (imageSize*0.7))/2), transform: [{ rotate }] }} resizeMode="contain" />
@@ -216,18 +202,9 @@ export default function AlbumScreen() {
                 </View>
               </TouchableOpacity>
             ))}
-            </ScrollView>
-          </Animated.View>
+          </ScrollView>
         </View>
       </SafeAreaView>
-
-      <PlayerSheet
-        visible={sheetVisible}
-        onClose={() => { setSheetVisible(false); setUIOpen(false); }}
-        album={current}
-        imageSize={Math.max(140, Math.floor(imageSize * 0.95))}
-        contentOpacity={contentOpacity}
-      />
     </View>
   );
 }
