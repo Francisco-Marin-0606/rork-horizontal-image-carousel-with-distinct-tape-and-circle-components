@@ -67,7 +67,7 @@ export default function AlbumScreen() {
   const tracks = useMemo<AlbumData[]>(() => (album ? inventedTracks(album) : []), [album]);
 
   const imageBase = Math.min(320, Math.floor(screenWidth * 0.68));
-  const imageSize = Math.floor(imageBase * 0.6);
+  const imageSize = Math.floor(imageBase * 0.72);
 
   const spin = useRef(new Animated.Value(0)).current;
   const spinActive = isPlaying && current?.id === album?.id;
@@ -165,8 +165,8 @@ const styles = StyleSheet.create({
   title: { color: '#fff', fontSize: 24, fontWeight: '800' as const, marginTop: 16 },
   subtitle: { color: '#cbd5e1', fontSize: 14, marginTop: 6 },
   ctaRow: { flexDirection: 'row', gap: 12 as unknown as number, marginTop: 14 },
-  ctaBtn: { paddingHorizontal: 18, paddingVertical: 10, borderRadius: 14 },
-  ctaText: { color: '#e5e7eb', fontSize: 16, fontWeight: '600' as const },
+  ctaBtn: { paddingHorizontal: 24, paddingVertical: 13, borderRadius: 18 },
+  ctaText: { color: '#e5e7eb', fontSize: 21, fontWeight: '600' as const },
   listDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.06)', marginTop: 18, marginBottom: 8 },
   row: { paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(255,255,255,0.06)', flexDirection: 'row', alignItems: 'center' },
   rowTitle: { color: '#fff', fontSize: 16, fontWeight: '500' as const },
