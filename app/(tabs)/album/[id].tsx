@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView, Animated, Easing, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -119,8 +119,15 @@ export default function AlbumScreen() {
 
   const SIDE_MARGIN = Math.floor(screenWidth * 0.05);
 
+  const entryOpacity = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    try { console.log('[nav] Album mount -> fade in'); } catch {}
+    entryOpacity.setValue(0);
+    Animated.timing(entryOpacity, { toValue: 1, duration: 240, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
+  }, [entryOpacity]);
+
   return (
-    <View style={styles.root} testID="album-screen-root">
+    <Animated.View style={[styles.root, { opacity: entryOpacity }]} testID="album-screen-root">
       <LinearGradient
         colors={[baseColor, '#000000', '#000000']}
         locations={[0, 0.5, 1]}
@@ -222,7 +229,7 @@ export default function AlbumScreen() {
           </ScrollView>
         </View>
       </SafeAreaView>
-    </View>
+    </Animated.View>
   );
 }
 

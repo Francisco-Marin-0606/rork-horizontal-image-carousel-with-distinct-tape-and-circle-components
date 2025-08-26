@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { hapticImpact, hapticSelection } from "@/utils/haptics";
 import { usePlayer } from "@/providers/PlayerProvider";
 import type { AlbumData } from "@/types/music";
@@ -432,8 +432,6 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
     if (visible) open();
   }, [visible, open]);
 
-
-
   useEffect(() => {
     if (userPaused) {
       try { console.log('[ui] userPaused set, blocking autoplay'); } catch {}
@@ -679,6 +677,7 @@ export default function MusicPlayerScreen() {
   const [sheetVisible, setSheetVisible] = useState<boolean>(false);
   const { setUIOpen, setQueue, select, uiOpen, current } = usePlayer();
   const contentOpacity = useRef(new Animated.Value(1)).current;
+  const isNavigatingRef = useRef<boolean>(false);
   const { playAlbum, isPlaying, next, prev } = usePlayer();
   const FALLBACK_AUDIO_URL = "https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/aura/audios/AURA/Relax/TRACK1.mp3" as const;
 
@@ -687,19 +686,25 @@ export default function MusicPlayerScreen() {
     if (h > 0) setContentHeight(h);
   }, []);
 
-
+  useFocusEffect(
+    useCallback(() => {
+      try { console.log('[nav] Home focused -> fade content to 1'); } catch {}
+      contentOpacity.stopAnimation?.(() => {} as any);
+      contentOpacity.setValue(0);
+      Animated.timing(contentOpacity, { toValue: 1, duration: 220, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
+      return () => {};
+    }, [contentOpacity])
+  );
 
   const imageSize = useMemo(() => {
     const headerApprox = 60;
-    const sectionsForSizing = 2; // mantener tamaños iguales a los existentes
+    const sectionsForSizing = 2;
     const perSectionAvailable = (contentHeight - sectionsForSizing * headerApprox) / sectionsForSizing;
     const textApprox = 56;
     const baseSize = Math.min(CARD_WIDTH, Math.max(120, Math.floor(perSectionAvailable - textApprox)));
     const adjusted = Math.max(90, Math.floor(baseSize * 0.8));
     return adjusted;
   }, [contentHeight]);
-
-  
 
   useEffect(() => {
     if (uiOpen) {
@@ -714,6 +719,17 @@ export default function MusicPlayerScreen() {
     setSheetVisible(true);
     setUIOpen(true);
   }, [select, setUIOpen]);
+
+  const navigateToAlbumWithFade = useCallback((a: AlbumData) => {
+    if (isNavigatingRef.current) return;
+    isNavigatingRef.current = true;
+    try { console.log('[nav] fade out -> navigating to album', a.id); } catch {}
+    contentOpacity.stopAnimation?.(() => {} as any);
+    Animated.timing(contentOpacity, { toValue: 0, duration: 200, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => {
+      router.push({ pathname: '/album/[id]', params: { id: a.id, title: a.title, subtitle: a.subtitle, color: a.color ?? '#111827', audioUrl: a.audioUrl ?? '' } });
+      setTimeout(() => { isNavigatingRef.current = false; }, 400);
+    });
+  }, [router, contentOpacity]);
 
   return (
     <View style={styles.container}>
@@ -730,8 +746,8 @@ export default function MusicPlayerScreen() {
             testID="vertical-scroll"
           >
             <CarouselSection title="Para ti" data={forYouData} imageSize={imageSize} topSpacing={16} onSelect={async (a) => { await hapticSelection(); handleSelect(a); }} />
-            <CarouselSection title="Instrumentales" data={instrumentalData} imageSize={imageSize} bottomSpacing={24} onSelect={async (a) => { await hapticSelection(); router.push({ pathname: '/album/[id]', params: { id: a.id, title: a.title, subtitle: a.subtitle, color: a.color ?? '#111827', audioUrl: a.audioUrl ?? '' } }); }} />
-            <CarouselSection title="" data={extraData} imageSize={imageSize} onSelect={async (a) => { await hapticSelection(); router.push({ pathname: '/album/[id]', params: { id: a.id, title: a.title, subtitle: a.subtitle, color: a.color ?? '#111827', audioUrl: a.audioUrl ?? '' } }); }} />
+            <CarouselSection title="Instrumentales" data={instrumentalData} imageSize={imageSize} bottomSpacing={24} onSelect={async (a) => { await hapticSelection(); navigateToAlbumWithFade(a); }} />
+            <CarouselSection title="" data={extraData} imageSize={imageSize} onSelect={async (a) => { await hapticSelection(); navigateToAlbumWithFade(a); }} />
           </ScrollView>
         </SafeAreaView>
       </Animated.View>
