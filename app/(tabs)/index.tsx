@@ -689,7 +689,7 @@ export default function MusicPlayerScreen() {
   useFocusEffect(
     useCallback(() => {
       try { console.log('[nav] Home focused -> fade content to 1'); } catch {}
-      contentOpacity.stopAnimation?.(() => {} as any);
+      contentOpacity.stopAnimation(() => {});
       contentOpacity.setValue(0);
       Animated.timing(contentOpacity, { toValue: 1, duration: 220, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
       return () => {};
@@ -724,7 +724,7 @@ export default function MusicPlayerScreen() {
     if (isNavigatingRef.current) return;
     isNavigatingRef.current = true;
     try { console.log('[nav] fade out -> navigating to album', a.id); } catch {}
-    contentOpacity.stopAnimation?.(() => {} as any);
+    contentOpacity.stopAnimation(() => {});
     Animated.timing(contentOpacity, { toValue: 0, duration: 200, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => {
       router.push({ pathname: '/album/[id]', params: { id: a.id, title: a.title, subtitle: a.subtitle, color: a.color ?? '#111827', audioUrl: a.audioUrl ?? '' } });
       setTimeout(() => { isNavigatingRef.current = false; }, 400);
