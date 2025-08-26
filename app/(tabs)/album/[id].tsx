@@ -94,7 +94,6 @@ export default function AlbumScreen() {
   }, [spinActive, spin]);
   const rotate = spin.interpolate({ inputRange: [0,1], outputRange: ['0deg','360deg'] });
 
-  const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
 
   if (!album) {
     return (
@@ -182,15 +181,13 @@ export default function AlbumScreen() {
             <View style={styles.listDivider} />
             {tracks.map((t, idx) => {
               const isCurrent = current?.id === t.id;
-              const isSelected = selectedTrackId === t.id;
-              const isActive = Boolean(isCurrent || isSelected);
+              const isActive = Boolean(isCurrent);
               return (
                 <TouchableOpacity
                   key={t.id}
                   style={[styles.row, isActive ? { backgroundColor: 'rgba(255,255,255,0.05)' } : null as any]}
                   activeOpacity={0.8}
                   onPress={async () => {
-                    setSelectedTrackId(t.id);
                     await hapticSelection();
                     try { console.log('[album] Track tapped', t.id); } catch {}
                     setQueue(tracks);
