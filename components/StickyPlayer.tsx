@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Animated, Image, PanResponder, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { usePlayer } from "@/providers/PlayerProvider";
 import { hapticSelection } from "@/utils/haptics";
-import Skeleton from '@/components/Skeleton';
 
 const COVER_URL_1 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers.png' as const;
 const COVER_URL_2 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers2.png' as const;
@@ -150,17 +149,12 @@ export default function StickyPlayer() {
           testID="sticky-player"
         >
         <View style={styles.leftRow}>
-          <View style={{ width: 41, height: 41 }}>
-            <View style={[StyleSheet.absoluteFill, { display: 'flex' }]}> 
-              <Skeleton width={41} height={41} borderRadius={0} testID="sticky-cover-skeleton" />
-            </View>
-            <Image
-              source={{ uri: coverUrl }}
-              style={styles.cover}
-              resizeMode="cover"
-              accessibilityIgnoresInvertColors
-            />
-          </View>
+          <Image
+            source={{ uri: coverUrl }}
+            style={styles.cover}
+            resizeMode="cover"
+            accessibilityIgnoresInvertColors
+          />
           <Text style={styles.title} numberOfLines={1} testID="sticky-title">
             {current?.title ?? ''}
           </Text>

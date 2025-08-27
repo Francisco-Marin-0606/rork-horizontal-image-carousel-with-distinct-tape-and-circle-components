@@ -96,7 +96,8 @@ const WaveText: React.FC<WaveTextProps> = React.memo(({ text, style, delayPerWor
   );
 });
 
-const VINYL_URL = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Vinillo_v2.png' as const;
+const VINYL_URL_1 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Vinilo1.png' as const;
+const VINYL_URL_2 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Vinilo2.png' as const;
 
 const COVER_URL_1 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers.png' as const;
 const COVER_URL_2 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers2.png' as const;
@@ -141,7 +142,7 @@ const CoverWithVinyl: React.FC<{ imageSize: number; spinActive?: boolean; vinylU
     <View style={{ position: "relative" as const, width: imageSize, height: imageSize }}>
       <Animated.Image
         source={{
-          uri: vinylUrl ?? VINYL_URL,
+          uri: vinylUrl ?? VINYL_URL_1,
         }}
         style={{ position: "absolute" as const, width: vinylSize, height: vinylSize, left: vinylLeft, top: vinylTop, transform: [{ rotate }] }}
         resizeMode="contain"
@@ -177,7 +178,7 @@ const AlbumCard: React.FC<AlbumCardProps> = React.memo(({ album, imageSize, onPr
       style={[styles.cardContainer]}
       testID={`album-card-${album.id}`}
     >
-      <CoverWithVinyl imageSize={imageSize} spinActive={spinActive} vinylUrl={VINYL_URL} coverUrl={coverUrl} />
+      <CoverWithVinyl imageSize={imageSize} spinActive={spinActive} vinylUrl={(Number(album.id) % 2 === 0 ? VINYL_URL_2 : VINYL_URL_1)} coverUrl={coverUrl} />
       <View style={[styles.textBlockColumn, { width: imageSize }]}>
         <Text style={styles.cardTitle} numberOfLines={1} ellipsizeMode="tail" testID={`album-title-${album.id}`}>
           {album.title}
@@ -520,8 +521,14 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
                 const prevTranslate = slideProg.interpolate({ inputRange: [0, 1], outputRange: [0, outTo] });
                 const currTranslate = slideProg.interpolate({ inputRange: [0, 1], outputRange: [inFrom, 0] });
                 const shouldAnimate = !!previous && dir !== 'none';
-                const getVinylUrlById = (_id?: string | null) => {
-                  return VINYL_URL;
+                const getVinylUrlById = (id?: string | null) => {
+                  const raw = id ?? '';
+                  const base = raw ? String(raw).split('-')[0] : '';
+                  const n = Number(base);
+                  if (Number.isFinite(n)) {
+                    return n % 2 === 0 ? VINYL_URL_2 : VINYL_URL_1;
+                  }
+                  return VINYL_URL_1;
                 };
                 const getCoverUrlById = (id?: string | null) => {
                   const raw = id ?? '';

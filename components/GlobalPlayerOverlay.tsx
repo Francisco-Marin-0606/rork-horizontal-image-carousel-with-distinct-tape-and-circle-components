@@ -6,21 +6,16 @@ import { hapticImpact, hapticSelection } from '@/utils/haptics';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-const VINYL_URL = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Vinillo_v2.png' as const;
+const VINYL_URL_1 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Vinilo1.png' as const;
+const VINYL_URL_2 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Vinilo2.png' as const;
 const COVER_URL_1 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers.png' as const;
 const COVER_URL_2 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers2.png' as const;
 const COVER_URL_3 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers1.png' as const;
-
-import Skeleton from '@/components/Skeleton';
 
 const CoverWithVinyl: React.FC<{ imageSize: number; spinActive?: boolean; vinylUrl?: string; coverUrl?: string }> = React.memo(({ imageSize, spinActive, vinylUrl, coverUrl }) => {
   const vinylSize = useMemo(() => Math.floor(imageSize * 0.7), [imageSize]);
   const vinylLeft = useMemo(() => Math.floor(imageSize - vinylSize / 2), [imageSize, vinylSize]);
   const vinylTop = useMemo(() => Math.floor((imageSize - vinylSize) / 2), [imageSize, vinylSize]);
-
-  const [vinylLoaded, setVinylLoaded] = useState<boolean>(false);
-  const [coverLoaded, setCoverLoaded] = useState<boolean>(false);
-  const allLoaded = vinylLoaded && coverLoaded;
 
   const spin = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -38,28 +33,9 @@ const CoverWithVinyl: React.FC<{ imageSize: number; spinActive?: boolean; vinylU
 
   return (
     <View style={{ position: 'relative', width: imageSize, height: imageSize }}>
-      {!allLoaded ? (
-        <View style={StyleSheet.absoluteFill} pointerEvents="none">
-          <Skeleton width={imageSize} height={imageSize} borderRadius={0} testID="global-player-cover-skeleton" />
-        </View>
-      ) : null}
-      <Animated.Image
-        source={{ uri: vinylUrl ?? VINYL_URL }}
-        style={{ position: 'absolute', width: vinylSize, height: vinylSize, left: vinylLeft, top: vinylTop, transform: [{ rotate }] }}
-        resizeMode="contain"
-        accessibilityIgnoresInvertColors
-        onLoadEnd={() => { try { console.log('[overlay] vinyl loaded'); } catch {}; setVinylLoaded(true); }}
-        onError={() => { try { console.warn('[overlay] vinyl error'); } catch {}; setVinylLoaded(true); }}
-      />
+      <Animated.Image source={{ uri: vinylUrl ?? VINYL_URL_1 }} style={{ position: 'absolute', width: vinylSize, height: vinylSize, left: vinylLeft, top: vinylTop, transform: [{ rotate }] }} resizeMode="contain" accessibilityIgnoresInvertColors />
       <View style={{ width: imageSize, height: imageSize }}>
-        <Image
-          source={{ uri: coverUrl ?? COVER_URL_1 }}
-          style={{ width: '100%', height: '100%' }}
-          resizeMode="cover"
-          accessibilityIgnoresInvertColors
-          onLoadEnd={() => { try { console.log('[overlay] cover loaded'); } catch {}; setCoverLoaded(true); }}
-          onError={() => { try { console.warn('[overlay] cover error'); } catch {}; setCoverLoaded(true); }}
-        />
+        <Image source={{ uri: coverUrl ?? COVER_URL_1 }} style={{ width: '100%', height: '100%' }} resizeMode="cover" accessibilityIgnoresInvertColors />
       </View>
     </View>
   );
@@ -273,8 +249,12 @@ export default function GlobalPlayerOverlay() {
   const prevColor = useMemo(() => darkenColor(prevBaseColor, 0.5), [prevBaseColor, darkenColor]);
   const currColor = useMemo(() => darkenColor(currBaseColor, 0.5), [currBaseColor, darkenColor]);
 
-  const getVinylUrlById = (_id?: string | null) => {
-    return VINYL_URL;
+  const getVinylUrlById = (id?: string | null) => {
+    const raw = id ?? '';
+    const base = raw ? String(raw).split('-')[0] : '';
+    const n = Number(base);
+    if (Number.isFinite(n)) return n % 2 === 0 ? VINYL_URL_2 : VINYL_URL_1;
+    return VINYL_URL_1;
   };
   const getCoverUrlById = (id?: string | null) => {
     const raw = id ?? '';
