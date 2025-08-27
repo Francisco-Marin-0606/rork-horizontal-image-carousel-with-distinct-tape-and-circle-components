@@ -137,6 +137,7 @@ export default function AlbumScreen() {
   const softColor = useMemo(() => darkenColor(baseColor, 0.5), [baseColor, darkenColor]);
 
   const SIDE_MARGIN = 0;
+  const TEXT_INDENT = Math.floor(screenWidth * 0.10);
 
   const entryOpacity = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -242,7 +243,7 @@ export default function AlbumScreen() {
                   {isActive ? (
                     <View pointerEvents="none" style={{ position: 'absolute', left: -SIDE_MARGIN, right: -SIDE_MARGIN, top: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.05)' }} />
                   ) : null}
-                  <View style={{ flex: 1 }}>
+                  <View style={{ flex: 1, paddingLeft: TEXT_INDENT }}>
                     <Text style={[styles.rowTitle, isActive ? { color: baseColor } : null]} numberOfLines={1}>{t.title}</Text>
                     <Text style={[styles.rowSubtitle, isActive ? { color: '#cbd5e1' } : null]} numberOfLines={1}>{t.subtitle}</Text>
                   </View>
