@@ -151,15 +151,15 @@ const CoverWithVinyl: React.FC<{ imageSize: number; spinActive?: boolean; vinylU
         accessibilityIgnoresInvertColors
         testID={`vinyl-bg`}
       />
-      <View style={{ position: 'absolute' as const, left: 0, top: 0, width: imageSize, height: imageSize, zIndex: 1 }} pointerEvents="none" testID={`cover-radial-overlay`}>
-        <Svg width={imageSize} height={imageSize} viewBox={`0 0 ${imageSize} ${imageSize}`}>
+      <View style={{ position: 'absolute' as const, left: vinylLeft, top: vinylTop, width: vinylSize, height: vinylSize, zIndex: 1 }} pointerEvents="none" testID={`cover-radial-overlay`}>
+        <Svg width={vinylSize} height={vinylSize} viewBox={`0 0 ${vinylSize} ${vinylSize}`}>
           <Defs>
             <RadialGradient id={gradId} cx="50%" cy="50%" r="50%">
               <Stop offset="0%" stopColor="#000000" stopOpacity={1} />
               <Stop offset="100%" stopColor="#000000" stopOpacity={0} />
             </RadialGradient>
           </Defs>
-          <Circle cx={imageSize / 2} cy={imageSize / 2} r={imageSize / 2} fill={`url(#${gradId})`} />
+          <Circle cx={vinylSize / 2} cy={vinylSize / 2} r={vinylSize / 2} fill={`url(#${gradId})`} />
         </Svg>
       </View>
       <View style={{ width: imageSize, height: imageSize, zIndex: 2 }}>
