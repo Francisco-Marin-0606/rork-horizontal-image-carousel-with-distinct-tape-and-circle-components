@@ -90,6 +90,7 @@ export default function AlbumScreen() {
   const imageBase = Math.min(320, Math.floor(screenWidth * 0.68));
   const imageSize = Math.floor(imageBase * 0.72);
   const coverOffset = Math.max(6, Math.floor(screenWidth * 0.04));
+  const TEXT_SHIFT = Math.floor(screenWidth * 0.05);
 
   const spin = useRef(new Animated.Value(0)).current;
   const getBaseId = (id?: string | null) => (id ? String(id).split('-')[0] : '');
@@ -242,7 +243,7 @@ export default function AlbumScreen() {
                   {isActive ? (
                     <View pointerEvents="none" style={{ position: 'absolute', left: -SIDE_MARGIN, right: -SIDE_MARGIN, top: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.05)' }} />
                   ) : null}
-                  <View style={{ flex: 1 }}>
+                  <View style={{ flex: 1, paddingLeft: TEXT_SHIFT }}>
                     <Text style={[styles.rowTitle, isActive ? { color: baseColor } : null]} numberOfLines={1}>{t.title}</Text>
                     <Text style={[styles.rowSubtitle, isActive ? { color: '#cbd5e1' } : null]} numberOfLines={1}>{t.subtitle}</Text>
                   </View>
