@@ -1,13 +1,14 @@
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView, Animated, Easing, Platform } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView, Animated, Easing, Platform, Alert, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePlayer } from '@/providers/PlayerProvider';
 import type { AlbumData } from '@/types/music';
 import { hapticImpact, hapticSelection } from '@/utils/haptics';
+import * as WebBrowser from 'expo-web-browser';
 
-import { Play, Shuffle } from 'lucide-react-native';
+import { Play, Shuffle, Download } from 'lucide-react-native';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -56,6 +57,68 @@ const getVinylUrlById = (id: string) => {
   if (Number.isFinite(n)) return n % 2 === 0 ? VINYL_URL_2 : VINYL_URL_1;
   return VINYL_URL_1;
 };
+
+const sanitizeFileName = (name: string) => (name ?? '')
+  .replace(/[^a-zA-Z0-9-_\.\s]/g, '')
+  .trim()
+  .replace(/\s+/g, '_');
+
+async function downloadUrlNative(url: string, _filename: string) {
+  try {
+    try { console.log('[download] native open browser ->', { url }); } catch {}
+    const res = await WebBrowser.openBrowserAsync(url);
+    if (res.type === 'cancel') {
+      try { await Linking.openURL(url); } catch {}
+    }
+  } catch (e) {
+    console.log('[download] native error', e);
+    Alert.alert?.('Descarga', 'No se pudo abrir el enlace de descarga');
+  }
+}
+
+async function downloadUrlWeb(url: string, filename: string) {
+  try {
+    try { console.log('[download] web ->', { url, filename }); } catch {}
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.rel = 'noopener';
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    Alert.alert?.('Descarga', 'Iniciando descarga en el navegador');
+  } catch (e) {
+    console.log('[download] web error', e);
+    Alert.alert?.('Descarga', 'No se pudo iniciar la descarga');
+  }
+}
+
+async function downloadTrackByData(track: AlbumData) {
+  const url = track.audioUrl ?? '';
+  if (!url) {
+    Alert.alert?.('Descarga', 'Esta pista no tiene audio disponible');
+    return;
+  }
+  const base = sanitizeFileName(`${track.title || 'track'}_${track.id}`).slice(0, 64);
+  const ext = url.split('?')[0].split('.').pop() || 'mp3';
+  const filename = `${base}.${ext}`;
+  if (Platform.OS === 'web') return downloadUrlWeb(url, filename);
+  return downloadUrlNative(url, filename);
+}
+
+async function downloadAlbumAll(tracks: AlbumData[]) {
+  if (!tracks || tracks.length === 0) {
+    Alert.alert?.('Descarga', 'No hay pistas para descargar');
+    return;
+  }
+  try { console.log('[download] album start', tracks.length); } catch {}
+  for (let i = 0; i < tracks.length; i++) {
+    const t = tracks[i];
+    try { await downloadTrackByData(t); } catch (e) { console.log('[download] track failed', t?.id, e); }
+  }
+  try { console.log('[download] album finished'); } catch {}
+}
 
 export default function AlbumScreen() {
   const router = useRouter();
@@ -271,6 +334,22 @@ export default function AlbumScreen() {
                     <Text style={[styles.ctaText, styles.ctaTextWithIcon]}>Aleatorio</Text>
                   </TouchableOpacity>
                 </View>
+                <View style={[styles.downloadRow, { paddingHorizontal: Math.floor(screenWidth * 0.08) }]}>
+                  <TouchableOpacity
+                    testID="btn-download-album"
+                    accessibilityRole="button"
+                    accessibilityLabel="Descargar Album"
+                    style={[styles.ctaBtn, { backgroundColor: 'rgba(255,255,255,0.12)', width: '100%' }]}
+                    onPress={async () => {
+                      try { console.log('[album] Download album pressed'); } catch {}
+                      await hapticImpact('medium');
+                      await downloadAlbumAll(tracks);
+                    }}
+                  >
+                    <Download color="#e5e7eb" size={20} />
+                    <Text style={[styles.ctaText, styles.ctaTextWithIcon]}>Descargar Album</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
 
               <View style={styles.listDivider} />
@@ -301,6 +380,15 @@ export default function AlbumScreen() {
                       <Text style={[styles.rowTitle, isActive ? { color: baseColor } : null]} numberOfLines={1}>{t.title}</Text>
                       <Text style={[styles.rowSubtitle, isActive ? { color: '#cbd5e1' } : null]} numberOfLines={1}>{t.subtitle}</Text>
                     </View>
+                    <TouchableOpacity
+                      onPress={async () => { await hapticSelection(); try { console.log('[album] Download track', t.id); } catch {}; await downloadTrackByData(t); }}
+                      accessibilityRole="button"
+                      style={{ padding: 8, marginLeft: 12 }}
+                      hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                      testID={`btn-download-track-${idx+1}`}
+                    >
+                      <Download color="#e5e7eb" size={20} />
+                    </TouchableOpacity>
                   </TouchableOpacity>
                 );
               })}
@@ -324,10 +412,11 @@ const styles = StyleSheet.create({
   ctaFlex: { flex: 1 },
   ctaTextWithIcon: { marginLeft: 8 },
   listDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.06)', marginTop: 18, marginBottom: 8 },
-  row: { paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(255,255,255,0.06)', flexDirection: 'row', alignItems: 'center' },
+  row: { paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(255,255,255,0.06)', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   rowTitle: { color: '#fff', fontSize: 16, fontWeight: '500' as const },
   rowSubtitle: { color: '#94a3b8', fontSize: 12, marginTop: 2 },
   skelCircle: { width: 22, height: 22, borderRadius: 11, backgroundColor: 'rgba(255,255,255,0.12)' },
   skelLine: { height: 18, borderRadius: 6, backgroundColor: 'rgba(255,255,255,0.12)' },
   skelBtn: { height: 42, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.12)', flex: 1 },
+  downloadRow: { width: '100%', marginTop: 12 },
 });
