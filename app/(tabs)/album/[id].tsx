@@ -88,7 +88,7 @@ export default function AlbumScreen() {
   const tracks = useMemo<AlbumData[]>(() => (album ? inventedTracks(album) : []), [album]);
 
   const imageBase = Math.min(320, Math.floor(screenWidth * 0.68));
-  const imageSize = Math.floor(imageBase * 0.72 * 1.5);
+  const imageSize = Math.floor(imageBase * 0.72);
 
   const spin = useRef(new Animated.Value(0)).current;
   const getBaseId = (id?: string | null) => (id ? String(id).split('-')[0] : '');
