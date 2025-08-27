@@ -179,7 +179,7 @@ export default function AlbumScreen() {
                   testID="btn-play"
                   accessibilityRole="button"
                   accessibilityLabel="Reproducir"
-                  style={[styles.ctaBtn, styles.ctaFlex, styles.ctaStart, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
+                  style={[styles.ctaBtn, styles.ctaFlex, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
                   onPress={async () => {
                     try { console.log('[album] Play button pressed'); } catch {}
                     await hapticImpact('medium');
@@ -201,7 +201,7 @@ export default function AlbumScreen() {
                   testID="btn-shuffle"
                   accessibilityRole="button"
                   accessibilityLabel="Aleatorio"
-                  style={[styles.ctaBtn, styles.ctaFlex, styles.ctaEnd, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
+                  style={[styles.ctaBtn, styles.ctaFlex, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
                   onPress={async () => {
                     try { console.log('[album] Shuffle button pressed'); } catch {}
                     await hapticImpact('light');
@@ -264,8 +264,6 @@ const styles = StyleSheet.create({
   subtitle: { color: '#cbd5e1', fontSize: 14, marginTop: 6 },
   ctaRow: { flexDirection: 'row', gap: 10 as unknown as number, marginTop: 28, width: '100%', paddingHorizontal: 16 },
   ctaBtn: { paddingHorizontal: 19, paddingVertical: 10, borderRadius: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
-  ctaStart: { justifyContent: 'flex-start' },
-  ctaEnd: { justifyContent: 'flex-end' },
   ctaText: { color: '#e5e7eb', fontSize: 17, fontWeight: '600' as const },
   ctaFlex: { flex: 1 },
   ctaTextWithIcon: { marginLeft: 8 },
