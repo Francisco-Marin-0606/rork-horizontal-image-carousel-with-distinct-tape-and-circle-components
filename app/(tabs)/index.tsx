@@ -747,13 +747,13 @@ export default function MusicPlayerScreen() {
     setUIOpen(true);
   }, [select, setUIOpen]);
 
-  const navigateToAlbumWithFade = useCallback((a: AlbumData) => {
+  const navigateToAlbumWithFade = useCallback((a: AlbumData, animateEntry?: boolean) => {
     if (isNavigatingRef.current) return;
     isNavigatingRef.current = true;
-    try { console.log('[nav] fade out -> navigating to album', a.id); } catch {}
+    try { console.log('[nav] fade out -> navigating to album', a.id, { animateEntry }); } catch {}
     contentOpacity.stopAnimation(() => {});
     Animated.timing(contentOpacity, { toValue: 0, duration: 200, easing: Easing.out(Easing.quad), useNativeDriver: true }).start(() => {
-      router.push({ pathname: '/album/[id]', params: { id: a.id, title: a.title, subtitle: a.subtitle, color: a.color ?? '#111827', audioUrl: a.audioUrl ?? '' } });
+      router.push({ pathname: '/album/[id]', params: { id: a.id, title: a.title, subtitle: a.subtitle, color: a.color ?? '#111827', audioUrl: a.audioUrl ?? '', animateEntry: animateEntry ? '1' : '0' } });
       setTimeout(() => { isNavigatingRef.current = false; }, 400);
     });
   }, [router, contentOpacity]);
@@ -780,7 +780,7 @@ export default function MusicPlayerScreen() {
             testID="vertical-scroll"
           >
             <CarouselSection title="Para ti" data={forYouData} imageSize={imageSize} topSpacing={16} loading={loading} onSelect={async (a) => { await hapticSelection(); handleSelect(a); }} />
-            <CarouselSection title="Instrumentales" data={instrumentalData} imageSize={imageSize} bottomSpacing={24} loading={loading} onSelect={async (a) => { await hapticSelection(); navigateToAlbumWithFade(a); }} />
+            <CarouselSection title="Instrumentales" data={instrumentalData} imageSize={imageSize} bottomSpacing={24} loading={loading} onSelect={async (a) => { await hapticSelection(); navigateToAlbumWithFade(a, true); }} />
             <CarouselSection title="" data={extraData} imageSize={imageSize} loading={loading} onSelect={async (a) => { await hapticSelection(); navigateToAlbumWithFade(a); }} />
           </ScrollView>
         </SafeAreaView>

@@ -65,6 +65,7 @@ export default function AlbumScreen() {
   const subtitleParam = (Array.isArray(params.subtitle) ? params.subtitle[0] : (params.subtitle as string)) ?? '';
   const colorParam = (Array.isArray(params.color) ? params.color[0] : (params.color as string)) ?? undefined;
   const audioUrlParam = (Array.isArray(params.audioUrl) ? params.audioUrl[0] : (params.audioUrl as string)) ?? undefined;
+  const animateEntryParam = (Array.isArray(params.animateEntry) ? params.animateEntry[0] : (params.animateEntry as string)) ?? '0';
   const { queue, select, current, isPlaying, play, setQueue, setUIOpen } = usePlayer();
   const [isSkeleton, setIsSkeleton] = React.useState<boolean>(true);
   React.useEffect(() => {
@@ -150,10 +151,12 @@ export default function AlbumScreen() {
 
   const entryTranslateX = useRef(new Animated.Value(screenWidth)).current;
   useEffect(() => {
-    try { console.log('[nav] Album mount -> slide in'); } catch {}
+    const shouldAnimate = String(animateEntryParam) === '1';
+    try { console.log('[nav] Album slide in?', { idParam, animateEntryParam, shouldAnimate }); } catch {}
+    if (!shouldAnimate) return;
     entryTranslateX.setValue(screenWidth);
     Animated.timing(entryTranslateX, { toValue: 0, duration: 320, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
-  }, [entryTranslateX]);
+  }, [entryTranslateX, idParam, animateEntryParam]);
 
   return (
     <View style={styles.root} testID="album-screen-root">
@@ -164,7 +167,7 @@ export default function AlbumScreen() {
         end={{ x: 0, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
-      <Animated.View style={[StyleSheet.absoluteFillObject, { transform: [{ translateX: entryTranslateX }], backfaceVisibility: 'hidden' as const, overflow: 'hidden' as const }]}>
+      <Animated.View style={[StyleSheet.absoluteFillObject, { transform: [{ translateX: entryTranslateX }], backfaceVisibility: 'hidden' as const, overflow: 'hidden' as const }]}> 
       <SafeAreaView style={{ flex: 1 }}>
         {isSkeleton ? (
           <View style={{ flex: 1 }} testID="album-skeleton">
