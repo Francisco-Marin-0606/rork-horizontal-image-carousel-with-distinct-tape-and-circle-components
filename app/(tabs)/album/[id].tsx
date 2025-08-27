@@ -224,11 +224,7 @@ export default function AlbumScreen() {
               return (
                 <TouchableOpacity
                   key={t.id}
-                  style={[
-                    styles.row,
-                    { marginLeft: -SIDE_MARGIN, marginRight: -SIDE_MARGIN, paddingLeft: SIDE_MARGIN, paddingRight: SIDE_MARGIN },
-                    isActive ? styles.rowActive : null as any,
-                  ]}
+                  style={[styles.row, isActive ? { backgroundColor: 'rgba(255,255,255,0.05)' } : null as any]}
                   activeOpacity={0.8}
                   onPress={async () => {
                     await hapticSelection();
@@ -264,8 +260,7 @@ const styles = StyleSheet.create({
   ctaFlex: { flex: 1 },
   ctaTextWithIcon: { marginLeft: 8 },
   listDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.06)', marginTop: 18, marginBottom: 8 },
-  row: { paddingHorizontal: 0, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(255,255,255,0.06)', flexDirection: 'row', alignItems: 'center' },
+  row: { paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(255,255,255,0.06)', flexDirection: 'row', alignItems: 'center' },
   rowTitle: { color: '#fff', fontSize: 16, fontWeight: '500' as const },
   rowSubtitle: { color: '#94a3b8', fontSize: 12, marginTop: 2 },
-  rowActive: { backgroundColor: 'rgba(255,255,255,0.05)' }
 });
