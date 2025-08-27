@@ -19,7 +19,6 @@ import { useRouter, useFocusEffect } from "expo-router";
 import { hapticImpact, hapticSelection } from "@/utils/haptics";
 import { usePlayer } from "@/providers/PlayerProvider";
 import type { AlbumData } from "@/types/music";
-import Svg, { Defs, RadialGradient, Stop, Circle } from 'react-native-svg';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
 const CARD_WIDTH = Math.round(screenWidth * 0.72 * 0.8);
@@ -139,29 +138,17 @@ const CoverWithVinyl: React.FC<{ imageSize: number; spinActive?: boolean; vinylU
   }, [spinActive, spin]);
   const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ["0deg", "360deg"] });
 
-  const gradId = useMemo(() => `grad-${Math.random().toString(36).slice(2)}`, [imageSize]);
   return (
     <View style={{ position: "relative" as const, width: imageSize, height: imageSize }}>
       <Animated.Image
         source={{
           uri: vinylUrl ?? VINYL_URL_1,
         }}
-        style={{ position: "absolute" as const, width: vinylSize, height: vinylSize, left: vinylLeft, top: vinylTop, transform: [{ rotate }], zIndex: 0 }}
+        style={{ position: "absolute" as const, width: vinylSize, height: vinylSize, left: vinylLeft, top: vinylTop, transform: [{ rotate }] }}
         resizeMode="contain"
         accessibilityIgnoresInvertColors
         testID={`vinyl-bg`}
       />
-      <View style={{ position: 'absolute' as const, left: vinylLeft, top: vinylTop, width: vinylSize, height: vinylSize, zIndex: 1 }} pointerEvents="none" testID={`cover-radial-overlay`}>
-        <Svg width={vinylSize} height={vinylSize} viewBox={`0 0 ${vinylSize} ${vinylSize}`}>
-          <Defs>
-            <RadialGradient id={gradId} cx="50%" cy="50%" r="50%">
-              <Stop offset="0%" stopColor="#000000" stopOpacity={1} />
-              <Stop offset="100%" stopColor="#000000" stopOpacity={0} />
-            </RadialGradient>
-          </Defs>
-          <Circle cx={vinylSize / 2} cy={vinylSize / 2} r={vinylSize / 2} fill={`url(#${gradId})`} />
-        </Svg>
-      </View>
       <View style={{ width: imageSize, height: imageSize, zIndex: 2 }}>
         <Image
           source={{
