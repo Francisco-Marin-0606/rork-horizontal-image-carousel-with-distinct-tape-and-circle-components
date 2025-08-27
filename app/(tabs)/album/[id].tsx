@@ -224,7 +224,11 @@ export default function AlbumScreen() {
               return (
                 <TouchableOpacity
                   key={t.id}
-                  style={[styles.row, isActive ? { backgroundColor: 'rgba(255,255,255,0.05)' } : null as any]}
+                  style={[
+                    styles.row,
+                    { marginLeft: -SIDE_MARGIN, marginRight: -SIDE_MARGIN, paddingLeft: 16 + SIDE_MARGIN, paddingRight: 16 + SIDE_MARGIN },
+                    isActive ? { backgroundColor: 'rgba(255,255,255,0.05)' } : null as any,
+                  ]}
                   activeOpacity={0.8}
                   onPress={async () => {
                     await hapticSelection();
