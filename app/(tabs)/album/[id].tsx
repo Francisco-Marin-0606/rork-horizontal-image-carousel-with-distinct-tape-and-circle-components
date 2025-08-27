@@ -150,6 +150,20 @@ export default function AlbumScreen() {
   const SIDE_MARGIN = 0;
 
   const entryTranslateX = useRef(new Animated.Value(screenWidth)).current;
+  const isExitingRef = useRef<boolean>(false);
+
+  const handleBack = useCallback(async () => {
+    if (isExitingRef.current) return;
+    isExitingRef.current = true;
+    try { console.log('[nav] Album slide out start'); } catch {}
+    await hapticSelection();
+    Animated.timing(entryTranslateX, { toValue: screenWidth, duration: 260, easing: Easing.in(Easing.cubic), useNativeDriver: true }).start(({ finished }) => {
+      try { console.log('[nav] Album slide out end', { finished }); } catch {}
+      router.back();
+      setTimeout(() => { isExitingRef.current = false; }, 300);
+    });
+  }, [entryTranslateX, router]);
+
   useEffect(() => {
     const shouldAnimate = String(animateEntryParam) === '1';
     try { console.log('[nav] Album slide in?', { idParam, animateEntryParam, shouldAnimate }); } catch {}
@@ -198,7 +212,7 @@ export default function AlbumScreen() {
         ) : (
           <View style={{ flex: 1, paddingLeft: SIDE_MARGIN, paddingRight: SIDE_MARGIN }}>
             <View style={[styles.headerRow, { paddingHorizontal: Math.floor(screenWidth * 0.08) }]}>
-              <TouchableOpacity accessibilityRole="button" testID="btn-back" style={{ padding: 8 }} onPress={async () => { await hapticSelection(); router.back(); }}>
+              <TouchableOpacity accessibilityRole="button" testID="btn-back" style={{ padding: 8 }} onPress={handleBack}>
                 <Image
                   source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/FlechaRetrocederV2.png' }}
                   style={{ width: 22, height: 22 }}
