@@ -160,6 +160,15 @@ const CoverWithVinyl: React.FC<{ imageSize: number; spinActive?: boolean; vinylU
           accessibilityLabel={`Imagen del álbum`}
         />
       </View>
+      <LinearGradient
+        colors={["rgba(0,0,0,1)", "rgba(0,0,0,0)"]}
+        locations={[0, 1]}
+        start={{ x: 1, y: 0.5 }}
+        end={{ x: 0, y: 0.5 }}
+        style={{ position: "absolute" as const, right: 0, top: 0, height: imageSize, width: Math.max(12, Math.floor(imageSize * 0.32)), zIndex: 3 }}
+        pointerEvents="none"
+        testID="cover-right-gradient"
+      />
     </View>
   );
 });

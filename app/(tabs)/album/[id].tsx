@@ -166,9 +166,18 @@ export default function AlbumScreen() {
           </View>
           <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
             <View style={{ alignItems: 'center', marginTop: 12 }}>
-              <View style={{ width: imageSize, height: imageSize }}>
+              <View style={{ width: imageSize, height: imageSize, position: 'relative' as const }}>
                 <Animated.Image source={{ uri: getVinylUrlById(album.id) }} style={{ position: 'absolute', width: Math.floor(imageSize * 0.7), height: Math.floor(imageSize * 0.7), left: Math.floor(imageSize - (imageSize*0.7)/2), top: Math.floor((imageSize - (imageSize*0.7))/2), transform: [{ rotate }] }} resizeMode="contain" />
                 <Image source={{ uri: getCoverUrlById(album.id) }} style={{ width: imageSize, height: imageSize }} resizeMode="cover" />
+                <LinearGradient
+                  colors={["rgba(0,0,0,1)", "rgba(0,0,0,0)"]}
+                  locations={[0, 1]}
+                  start={{ x: 1, y: 0.5 }}
+                  end={{ x: 0, y: 0.5 }}
+                  style={{ position: 'absolute' as const, right: 0, top: 0, height: imageSize, width: Math.max(12, Math.floor(imageSize * 0.32)), zIndex: 3 }}
+                  pointerEvents="none"
+                  testID="album-cover-right-gradient"
+                />
               </View>
               <Text style={styles.title} numberOfLines={2} testID="album-title">{album.title}</Text>
               <Text style={styles.subtitle} numberOfLines={1}>{'18 Hz - Ondas Beta'}</Text>
