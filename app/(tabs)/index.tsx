@@ -781,7 +781,7 @@ export default function MusicPlayerScreen() {
           >
             <CarouselSection title="Para ti" data={forYouData} imageSize={imageSize} topSpacing={16} loading={loading} onSelect={async (a) => { await hapticSelection(); handleSelect(a); }} />
             <CarouselSection title="Instrumentales" data={instrumentalData} imageSize={imageSize} bottomSpacing={24} loading={loading} onSelect={async (a) => { await hapticSelection(); navigateToAlbumWithFade(a, true); }} />
-            <CarouselSection title="" data={extraData} imageSize={imageSize} loading={loading} onSelect={async (a) => { await hapticSelection(); navigateToAlbumWithFade(a); }} />
+            <CarouselSection title="" data={extraData} imageSize={imageSize} loading={loading} onSelect={async (a) => { await hapticSelection(); navigateToAlbumWithFade(a, true); }} />
           </ScrollView>
         </SafeAreaView>
       </Animated.View>
