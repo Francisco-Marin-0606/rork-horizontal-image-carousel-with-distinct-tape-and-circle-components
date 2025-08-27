@@ -51,7 +51,7 @@ const ArrowIcon: React.FC<{ direction: 'next' | 'prev'; size?: number; testID?: 
 export default function GlobalPlayerOverlay() {
   const { uiOpen, setUIOpen, current, previous, changeDirection, userPaused, isPlaying, next, prev, pause, play } = usePlayer();
 
-  const sheetHeight = Math.floor(screenHeight * 0.82);
+  const sheetHeight = Math.floor(screenHeight * 0.9);
   const translateY = useRef(new Animated.Value(sheetHeight)).current;
   const backdrop = useRef(new Animated.Value(0)).current;
   const offsetUp = Math.floor(sheetHeight * 0.12);
