@@ -136,7 +136,7 @@ export default function AlbumScreen() {
   }, []);
   const softColor = useMemo(() => darkenColor(baseColor, 0.5), [baseColor, darkenColor]);
 
-  const SIDE_MARGIN = Math.floor(screenWidth * 0.05);
+  const SIDE_MARGIN = 0;
 
   const entryOpacity = useRef(new Animated.Value(0)).current;
   useEffect(() => {
