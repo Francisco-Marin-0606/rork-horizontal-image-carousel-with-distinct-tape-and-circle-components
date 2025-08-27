@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView, Animated, Easing, Platform } from 'react-native';
+import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView, Animated, Easing } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +8,7 @@ import type { AlbumData } from '@/types/music';
 import { hapticImpact, hapticSelection } from '@/utils/haptics';
 
 import { Play, Shuffle } from 'lucide-react-native';
+import Skeleton from '@/components/Skeleton';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -141,6 +142,10 @@ export default function AlbumScreen() {
     Animated.timing(entryOpacity, { toValue: 1, duration: 240, easing: Easing.out(Easing.quad), useNativeDriver: true }).start();
   }, [entryOpacity]);
 
+  const [coverLoaded, setCoverLoaded] = useState<boolean>(false);
+  const [vinylLoaded, setVinylLoaded] = useState<boolean>(false);
+  const allLoaded = coverLoaded && vinylLoaded;
+
   return (
     <Animated.View style={[styles.root, { opacity: entryOpacity }]} testID="album-screen-root">
       <LinearGradient
@@ -164,8 +169,27 @@ export default function AlbumScreen() {
           <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
             <View style={{ alignItems: 'center', marginTop: 12 }}>
               <View style={{ width: imageSize, height: imageSize }}>
-                <Animated.Image source={{ uri: getVinylUrlById(album.id) }} style={{ position: 'absolute', width: Math.floor(imageSize * 0.7), height: Math.floor(imageSize * 0.7), left: Math.floor(imageSize - (imageSize*0.7)/2), top: Math.floor((imageSize - (imageSize*0.7))/2), transform: [{ rotate }] }} resizeMode="contain" />
-                <Image source={{ uri: getCoverUrlById(album.id) }} style={{ width: imageSize, height: imageSize }} resizeMode="cover" />
+                {!allLoaded ? (
+                  <View style={StyleSheet.absoluteFill} pointerEvents="none">
+                    <Skeleton width={imageSize} height={imageSize} borderRadius={0} testID="album-cover-skeleton" />
+                  </View>
+                ) : null}
+                <Animated.Image
+                  source={{ uri: getVinylUrlById(album.id) }}
+                  style={{ position: 'absolute', width: Math.floor(imageSize * 0.7), height: Math.floor(imageSize * 0.7), left: Math.floor(imageSize - (imageSize*0.7)/2), top: Math.floor((imageSize - (imageSize*0.7))/2), transform: [{ rotate }] }}
+                  resizeMode="contain"
+                  onLoadEnd={() => { try { console.log('[album] vinyl loaded'); } catch {}; setVinylLoaded(true); }}
+                  onError={() => { try { console.warn('[album] vinyl error'); } catch {}; setVinylLoaded(true); }}
+                  testID="album-vinyl"
+                />
+                <Image
+                  source={{ uri: getCoverUrlById(album.id) }}
+                  style={{ width: imageSize, height: imageSize }}
+                  resizeMode="cover"
+                  onLoadEnd={() => { try { console.log('[album] cover loaded'); } catch {}; setCoverLoaded(true); }}
+                  onError={() => { try { console.warn('[album] cover error'); } catch {}; setCoverLoaded(true); }}
+                  testID="album-cover"
+                />
               </View>
               <Text style={styles.title} numberOfLines={2} testID="album-title">{album.title}</Text>
               <Text style={styles.subtitle} numberOfLines={1}>{'18 Hz - Ondas Beta'}</Text>

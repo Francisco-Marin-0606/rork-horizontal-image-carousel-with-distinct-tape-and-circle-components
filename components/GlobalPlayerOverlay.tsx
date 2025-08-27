@@ -11,10 +11,16 @@ const COVER_URL_1 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/M
 const COVER_URL_2 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers2.png' as const;
 const COVER_URL_3 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers1.png' as const;
 
+import Skeleton from '@/components/Skeleton';
+
 const CoverWithVinyl: React.FC<{ imageSize: number; spinActive?: boolean; vinylUrl?: string; coverUrl?: string }> = React.memo(({ imageSize, spinActive, vinylUrl, coverUrl }) => {
   const vinylSize = useMemo(() => Math.floor(imageSize * 0.7), [imageSize]);
   const vinylLeft = useMemo(() => Math.floor(imageSize - vinylSize / 2), [imageSize, vinylSize]);
   const vinylTop = useMemo(() => Math.floor((imageSize - vinylSize) / 2), [imageSize, vinylSize]);
+
+  const [vinylLoaded, setVinylLoaded] = useState<boolean>(false);
+  const [coverLoaded, setCoverLoaded] = useState<boolean>(false);
+  const allLoaded = vinylLoaded && coverLoaded;
 
   const spin = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -32,9 +38,28 @@ const CoverWithVinyl: React.FC<{ imageSize: number; spinActive?: boolean; vinylU
 
   return (
     <View style={{ position: 'relative', width: imageSize, height: imageSize }}>
-      <Animated.Image source={{ uri: vinylUrl ?? VINYL_URL }} style={{ position: 'absolute', width: vinylSize, height: vinylSize, left: vinylLeft, top: vinylTop, transform: [{ rotate }] }} resizeMode="contain" accessibilityIgnoresInvertColors />
+      {!allLoaded ? (
+        <View style={StyleSheet.absoluteFill} pointerEvents="none">
+          <Skeleton width={imageSize} height={imageSize} borderRadius={0} testID="global-player-cover-skeleton" />
+        </View>
+      ) : null}
+      <Animated.Image
+        source={{ uri: vinylUrl ?? VINYL_URL }}
+        style={{ position: 'absolute', width: vinylSize, height: vinylSize, left: vinylLeft, top: vinylTop, transform: [{ rotate }] }}
+        resizeMode="contain"
+        accessibilityIgnoresInvertColors
+        onLoadEnd={() => { try { console.log('[overlay] vinyl loaded'); } catch {}; setVinylLoaded(true); }}
+        onError={() => { try { console.warn('[overlay] vinyl error'); } catch {}; setVinylLoaded(true); }}
+      />
       <View style={{ width: imageSize, height: imageSize }}>
-        <Image source={{ uri: coverUrl ?? COVER_URL_1 }} style={{ width: '100%', height: '100%' }} resizeMode="cover" accessibilityIgnoresInvertColors />
+        <Image
+          source={{ uri: coverUrl ?? COVER_URL_1 }}
+          style={{ width: '100%', height: '100%' }}
+          resizeMode="cover"
+          accessibilityIgnoresInvertColors
+          onLoadEnd={() => { try { console.log('[overlay] cover loaded'); } catch {}; setCoverLoaded(true); }}
+          onError={() => { try { console.warn('[overlay] cover error'); } catch {}; setCoverLoaded(true); }}
+        />
       </View>
     </View>
   );
