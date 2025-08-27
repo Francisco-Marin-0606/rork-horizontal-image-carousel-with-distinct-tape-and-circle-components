@@ -340,11 +340,7 @@ export default function AlbumScreen() {
                     accessibilityRole="button"
                     accessibilityLabel="Descargar Album"
                     style={[styles.ctaBtn, { backgroundColor: 'rgba(255,255,255,0.12)', width: '100%' }]}
-                    onPress={async () => {
-                      try { console.log('[album] Download album pressed'); } catch {}
-                      await hapticImpact('medium');
-                      await downloadAlbumAll(tracks);
-                    }}
+                    disabled={true}
                   >
                     <Download color="#e5e7eb" size={20} />
                     <Text style={[styles.ctaText, styles.ctaTextWithIcon]}>Descargar Album</Text>
@@ -381,11 +377,11 @@ export default function AlbumScreen() {
                       <Text style={[styles.rowSubtitle, isActive ? { color: '#cbd5e1' } : null]} numberOfLines={1}>{t.subtitle}</Text>
                     </View>
                     <TouchableOpacity
-                      onPress={async () => { await hapticSelection(); try { console.log('[album] Download track', t.id); } catch {}; await downloadTrackByData(t); }}
                       accessibilityRole="button"
                       style={{ padding: 8, marginLeft: 12 }}
                       hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
                       testID={`btn-download-track-${idx+1}`}
+                      disabled={true}
                     >
                       <Download color="#e5e7eb" size={20} />
                     </TouchableOpacity>
