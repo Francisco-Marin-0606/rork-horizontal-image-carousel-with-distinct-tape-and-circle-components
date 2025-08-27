@@ -148,20 +148,15 @@ export default function AlbumScreen() {
 
   const SIDE_MARGIN = 0;
 
-  const entryOpacity = useRef(new Animated.Value(0)).current;
   const entryTranslateX = useRef(new Animated.Value(screenWidth)).current;
   useEffect(() => {
-    try { console.log('[nav] Album mount -> slide + fade in'); } catch {}
-    entryOpacity.setValue(0);
+    try { console.log('[nav] Album mount -> slide in'); } catch {}
     entryTranslateX.setValue(screenWidth);
-    Animated.parallel([
-      Animated.timing(entryOpacity, { toValue: 1, duration: 280, easing: Easing.out(Easing.quad), useNativeDriver: true }),
-      Animated.timing(entryTranslateX, { toValue: 0, duration: 320, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
-    ]).start();
-  }, [entryOpacity, entryTranslateX]);
+    Animated.timing(entryTranslateX, { toValue: 0, duration: 320, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+  }, [entryTranslateX]);
 
   return (
-    <Animated.View style={[styles.root, { opacity: entryOpacity, transform: [{ translateX: entryTranslateX }] }]} testID="album-screen-root">
+    <View style={styles.root} testID="album-screen-root">
       <LinearGradient
         colors={[softColor, softColor, '#000000']}
         locations={[0, 0.02, 1]}
@@ -169,6 +164,7 @@ export default function AlbumScreen() {
         end={{ x: 0, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
+      <Animated.View style={[StyleSheet.absoluteFillObject, { transform: [{ translateX: entryTranslateX }], backfaceVisibility: 'hidden' as const, overflow: 'hidden' as const }]}>
       <SafeAreaView style={{ flex: 1 }}>
         {isSkeleton ? (
           <View style={{ flex: 1 }} testID="album-skeleton">
@@ -295,7 +291,8 @@ export default function AlbumScreen() {
           </View>
         )}
       </SafeAreaView>
-    </Animated.View>
+      </Animated.View>
+    </View>
   );
 }
 
