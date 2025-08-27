@@ -347,6 +347,11 @@ export default function AlbumScreen() {
                       try { console.log('[download] album toggle visual'); } catch {}
                       await hapticSelection();
                       setAlbumDownloaded(true);
+                      setDownloadedMap(prev => {
+                        const next: Record<string, boolean> = { ...prev };
+                        tracks.forEach(tr => { next[tr.id] = true; });
+                        return next;
+                      });
                     }}
                     disabled={albumDownloaded}
                   >
