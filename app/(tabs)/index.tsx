@@ -659,11 +659,6 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
               </View>
             </View>
           </View>
-          <TouchableOpacity style={styles.moreFab} testID="btn-more" accessibilityRole="button" activeOpacity={0.8} onPress={async () => { await hapticSelection(); }}>
-            <View style={styles.moreDot} />
-            <View style={[styles.moreDot, { marginLeft: 4 }]} />
-            <View style={[styles.moreDot, { marginLeft: 4 }]} />
-          </TouchableOpacity>
         </View>
       </Animated.View>
     </View>

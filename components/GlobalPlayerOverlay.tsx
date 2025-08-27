@@ -349,11 +349,6 @@ export default function GlobalPlayerOverlay() {
               </View>
             </View>
           </View>
-          <TouchableOpacity style={styles.moreFab} testID="global-btn-more" accessibilityRole="button" activeOpacity={0.8} onPress={async () => { await hapticSelection(); }}>
-            <View style={styles.moreDot} />
-            <View style={[styles.moreDot, { marginLeft: 4 }]} />
-            <View style={[styles.moreDot, { marginLeft: 4 }]} />
-          </TouchableOpacity>
         </View>
       </Animated.View>
     </View>
@@ -374,7 +369,5 @@ const styles = StyleSheet.create({
   controlsRow: { position: 'absolute', left: 0, right: 0, bottom: 200, alignItems: 'center', justifyContent: 'center' },
   playButton: { alignItems: 'center', justifyContent: 'center', backgroundColor: 'transparent' },
   coverRow: { paddingHorizontal: 0 },
-  moreFab: { position: 'absolute', right: 24, bottom: 28, width: 40, height: 40, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.04)', alignItems: 'center', justifyContent: 'center', flexDirection: 'row' },
-  moreDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#64748B' },
   controlsInner: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '64%', alignSelf: 'center' },
 });
