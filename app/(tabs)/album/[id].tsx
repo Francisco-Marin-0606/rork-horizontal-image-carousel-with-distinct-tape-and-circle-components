@@ -185,7 +185,6 @@ export default function AlbumScreen() {
                       setQueue(tracks);
                       await select(tracks[0], { forceAutoplay: true });
                       await play();
-                      setUIOpen(true);
                     }
                   }}
                 >
@@ -209,7 +208,6 @@ export default function AlbumScreen() {
                       setQueue(tracks);
                       await select(anyTrack, { forceAutoplay: true });
                       await play();
-                      setUIOpen(true);
                     }
                   }}
                 >
