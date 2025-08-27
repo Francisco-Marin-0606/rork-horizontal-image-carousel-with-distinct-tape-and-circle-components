@@ -6,8 +6,7 @@ import { hapticImpact, hapticSelection } from '@/utils/haptics';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-const VINYL_URL_1 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Vinilo1.png' as const;
-const VINYL_URL_2 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Vinilo2.png' as const;
+const VINYL_URL = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Vinillo_v2.png' as const;
 const COVER_URL_1 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers.png' as const;
 const COVER_URL_2 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers2.png' as const;
 const COVER_URL_3 = 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Covers1.png' as const;
@@ -33,7 +32,7 @@ const CoverWithVinyl: React.FC<{ imageSize: number; spinActive?: boolean; vinylU
 
   return (
     <View style={{ position: 'relative', width: imageSize, height: imageSize }}>
-      <Animated.Image source={{ uri: vinylUrl ?? VINYL_URL_1 }} style={{ position: 'absolute', width: vinylSize, height: vinylSize, left: vinylLeft, top: vinylTop, transform: [{ rotate }] }} resizeMode="contain" accessibilityIgnoresInvertColors />
+      <Animated.Image source={{ uri: vinylUrl ?? VINYL_URL }} style={{ position: 'absolute', width: vinylSize, height: vinylSize, left: vinylLeft, top: vinylTop, transform: [{ rotate }] }} resizeMode="contain" accessibilityIgnoresInvertColors />
       <View style={{ width: imageSize, height: imageSize }}>
         <Image source={{ uri: coverUrl ?? COVER_URL_1 }} style={{ width: '100%', height: '100%' }} resizeMode="cover" accessibilityIgnoresInvertColors />
       </View>
@@ -249,12 +248,8 @@ export default function GlobalPlayerOverlay() {
   const prevColor = useMemo(() => darkenColor(prevBaseColor, 0.5), [prevBaseColor, darkenColor]);
   const currColor = useMemo(() => darkenColor(currBaseColor, 0.5), [currBaseColor, darkenColor]);
 
-  const getVinylUrlById = (id?: string | null) => {
-    const raw = id ?? '';
-    const base = raw ? String(raw).split('-')[0] : '';
-    const n = Number(base);
-    if (Number.isFinite(n)) return n % 2 === 0 ? VINYL_URL_2 : VINYL_URL_1;
-    return VINYL_URL_1;
+  const getVinylUrlById = (_id?: string | null) => {
+    return VINYL_URL;
   };
   const getCoverUrlById = (id?: string | null) => {
     const raw = id ?? '';
