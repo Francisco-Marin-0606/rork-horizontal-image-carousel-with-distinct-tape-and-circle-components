@@ -161,6 +161,7 @@ export default function AlbumScreen() {
   const tracks = useMemo<AlbumData[]>(() => (album ? inventedTracks(album) : []), [album]);
 
   const [downloadedMap, setDownloadedMap] = React.useState<Record<string, boolean>>({});
+  const [albumDownloaded, setAlbumDownloaded] = React.useState<boolean>(false);
 
   const imageBase = Math.min(320, Math.floor(screenWidth * 0.68));
   const imageSize = Math.floor(imageBase * 0.72);
@@ -340,12 +341,30 @@ export default function AlbumScreen() {
                   <TouchableOpacity
                     testID="btn-download-album"
                     accessibilityRole="button"
-                    accessibilityLabel="Descargar Album"
+                    accessibilityLabel={albumDownloaded ? 'Álbum descargado' : 'Descargar álbum'}
                     style={[styles.ctaBtn, { backgroundColor: 'rgba(255,255,255,0.12)', width: '100%' }]}
-                    disabled={true}
+                    onPress={async () => {
+                      try { console.log('[download] album toggle visual'); } catch {}
+                      await hapticSelection();
+                      setAlbumDownloaded(true);
+                    }}
+                    disabled={albumDownloaded}
                   >
-                    <Download color="#e5e7eb" size={20} />
-                    <Text style={[styles.ctaText, styles.ctaTextWithIcon]}>Descargar Album</Text>
+                    {albumDownloaded ? (
+                      <>
+                        <Image
+                          source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Descargado.png' }}
+                          style={{ width: 20, height: 20 }}
+                          resizeMode="contain"
+                        />
+                        <Text style={[styles.ctaText, styles.ctaTextWithIcon]}>Album descargado</Text>
+                      </>
+                    ) : (
+                      <>
+                        <Download color="#e5e7eb" size={20} />
+                        <Text style={[styles.ctaText, styles.ctaTextWithIcon]}>Descargar Album</Text>
+                      </>
+                    )}
                   </TouchableOpacity>
                 </View>
               </View>
