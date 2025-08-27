@@ -34,7 +34,7 @@ const CoverWithVinyl: React.FC<{ imageSize: number; spinActive?: boolean; vinylU
   return (
     <View style={{ position: 'relative', width: imageSize, height: imageSize }}>
       <Animated.Image source={{ uri: vinylUrl ?? VINYL_URL_1 }} style={{ position: 'absolute', width: vinylSize, height: vinylSize, left: vinylLeft, top: vinylTop, transform: [{ rotate }] }} resizeMode="contain" accessibilityIgnoresInvertColors />
-      <View style={{ width: imageSize, height: imageSize, borderRadius: 12, overflow: 'hidden' }}>
+      <View style={{ width: imageSize, height: imageSize }}>
         <Image source={{ uri: coverUrl ?? COVER_URL_1 }} style={{ width: '100%', height: '100%' }} resizeMode="cover" accessibilityIgnoresInvertColors />
       </View>
     </View>

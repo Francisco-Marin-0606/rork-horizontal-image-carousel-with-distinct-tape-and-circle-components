@@ -168,7 +168,7 @@ export default function AlbumScreen() {
             <View style={{ alignItems: 'center', marginTop: 12 }}>
               <View style={{ width: imageSize, height: imageSize }}>
                 <Animated.Image source={{ uri: getVinylUrlById(album.id) }} style={{ position: 'absolute', width: Math.floor(imageSize * 0.7), height: Math.floor(imageSize * 0.7), left: Math.floor(imageSize - (imageSize*0.7)/2), top: Math.floor((imageSize - (imageSize*0.7))/2), transform: [{ rotate }] }} resizeMode="contain" />
-                <Image source={{ uri: getCoverUrlById(album.id) }} style={{ width: imageSize, height: imageSize, borderRadius: 14 }} resizeMode="cover" />
+                <Image source={{ uri: getCoverUrlById(album.id) }} style={{ width: imageSize, height: imageSize }} resizeMode="cover" />
               </View>
               <Text style={styles.title} numberOfLines={2} testID="album-title">{album.title}</Text>
               <Text style={styles.subtitle} numberOfLines={1}>{'18 Hz - Ondas Beta'}</Text>

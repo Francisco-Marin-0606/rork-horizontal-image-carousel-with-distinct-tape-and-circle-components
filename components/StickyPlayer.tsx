@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     ...(Platform.OS !== 'web' ? { shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 18, shadowOffset: { width: 0, height: 10 }, elevation: 10 } : null as any),
   },
   leftRow: { flexDirection: 'row', alignItems: 'center', flex: 1, paddingRight: 10 },
-  cover: { width: 41, height: 41, borderRadius: 10 },
+  cover: { width: 41, height: 41 },
   title: { color: '#fff', fontSize: 17, fontWeight: '500', marginLeft: 10, flexShrink: 1 },
   actions: { flexDirection: 'row', alignItems: 'center' },
 });

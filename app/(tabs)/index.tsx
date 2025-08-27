@@ -149,7 +149,7 @@ const CoverWithVinyl: React.FC<{ imageSize: number; spinActive?: boolean; vinylU
         accessibilityIgnoresInvertColors
         testID={`vinyl-bg`}
       />
-      <View style={{ width: imageSize, height: imageSize, borderRadius: 12, overflow: "hidden" as const, zIndex: 2 }}>
+      <View style={{ width: imageSize, height: imageSize, zIndex: 2 }}>
         <Image
           source={{
             uri: coverUrl ?? COVER_URL_1,
