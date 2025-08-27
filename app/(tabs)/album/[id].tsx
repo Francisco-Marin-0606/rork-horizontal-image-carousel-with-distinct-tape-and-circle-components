@@ -89,6 +89,7 @@ export default function AlbumScreen() {
 
   const imageBase = Math.min(320, Math.floor(screenWidth * 0.68));
   const imageSize = Math.floor(imageBase * 0.72);
+  const coverOffset = Math.max(6, Math.floor(screenWidth * 0.04));
 
   const spin = useRef(new Animated.Value(0)).current;
   const getBaseId = (id?: string | null) => (id ? String(id).split('-')[0] : '');
@@ -166,7 +167,7 @@ export default function AlbumScreen() {
           </View>
           <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
             <View style={{ alignItems: 'center', marginTop: 12 }}>
-              <View style={{ width: imageSize, height: imageSize }}>
+              <View style={{ width: imageSize, height: imageSize, marginLeft: -coverOffset }} testID="album-cover-container">
                 <Animated.Image source={{ uri: getVinylUrlById(album.id) }} style={{ position: 'absolute', width: Math.floor(imageSize * 0.7), height: Math.floor(imageSize * 0.7), left: Math.floor(imageSize - (imageSize*0.7)/2), top: Math.floor((imageSize - (imageSize*0.7))/2), transform: [{ rotate }] }} resizeMode="contain" />
                 <Image source={{ uri: getCoverUrlById(album.id) }} style={{ width: imageSize, height: imageSize }} resizeMode="cover" />
               </View>
