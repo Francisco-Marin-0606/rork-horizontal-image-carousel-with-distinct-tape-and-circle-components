@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePlayer } from '@/providers/PlayerProvider';
 import type { AlbumData } from '@/types/music';
 import { hapticImpact, hapticSelection } from '@/utils/haptics';
+import Svg, { Defs, RadialGradient, Stop, Circle } from 'react-native-svg';
 
 import { Play, Shuffle } from 'lucide-react-native';
 
@@ -166,9 +167,42 @@ export default function AlbumScreen() {
           </View>
           <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
             <View style={{ alignItems: 'center', marginTop: 12 }}>
-              <View style={{ width: imageSize, height: imageSize }}>
-                <Animated.Image source={{ uri: getVinylUrlById(album.id) }} style={{ position: 'absolute', width: Math.floor(imageSize * 0.7), height: Math.floor(imageSize * 0.7), left: Math.floor(imageSize - (imageSize*0.7)/2), top: Math.floor((imageSize - (imageSize*0.7))/2), transform: [{ rotate }] }} resizeMode="contain" />
-                <Image source={{ uri: getCoverUrlById(album.id) }} style={{ width: imageSize, height: imageSize }} resizeMode="cover" />
+              <View style={{ width: imageSize, height: imageSize, position: 'relative' }}>
+                {(() => {
+                  const vinylSize = Math.floor(imageSize * 0.7);
+                  const gradLeft = Math.floor(imageSize - vinylSize / 2);
+                  const gradTop = Math.floor((imageSize - vinylSize) / 2);
+                  return (
+                    <>
+                      <Image
+                        source={{ uri: getCoverUrlById(album.id) }}
+                        style={{ width: imageSize, height: imageSize, zIndex: 1 }}
+                        resizeMode="cover"
+                      />
+                      <Svg
+                        width={vinylSize}
+                        height={vinylSize}
+                        viewBox={`0 0 ${vinylSize} ${vinylSize}`}
+                        style={{ position: 'absolute', left: gradLeft, top: gradTop, zIndex: 2 }}
+                        pointerEvents="none"
+                      >
+                        <Defs>
+                          <RadialGradient id="blackFade" cx="50%" cy="50%" r="50%">
+                            <Stop offset="0%" stopColor="#000" stopOpacity="1" />
+                            <Stop offset="70%" stopColor="#000" stopOpacity="0.35" />
+                            <Stop offset="100%" stopColor="#000" stopOpacity="0" />
+                          </RadialGradient>
+                        </Defs>
+                        <Circle cx={vinylSize / 2} cy={vinylSize / 2} r={vinylSize / 2} fill="url(#blackFade)" />
+                      </Svg>
+                      <Animated.Image
+                        source={{ uri: getVinylUrlById(album.id) }}
+                        style={{ position: 'absolute', width: vinylSize, height: vinylSize, left: gradLeft, top: gradTop, transform: [{ rotate }], zIndex: 3 }}
+                        resizeMode="contain"
+                      />
+                    </>
+                  );
+                })()}
               </View>
               <Text style={styles.title} numberOfLines={2} testID="album-title">{album.title}</Text>
               <Text style={styles.subtitle} numberOfLines={1}>{'18 Hz - Ondas Beta'}</Text>
