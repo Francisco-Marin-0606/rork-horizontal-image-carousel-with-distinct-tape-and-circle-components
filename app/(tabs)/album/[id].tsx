@@ -117,6 +117,24 @@ export default function AlbumScreen() {
 
   const baseColor = album.color ?? '#111827';
 
+  const darkenColor = useCallback((hex: string, factor: number) => {
+    try {
+      const cleaned = hex.replace('#', '');
+      const bigint = parseInt(cleaned.length === 3 ? cleaned.split('').map(c => c + c).join('') : cleaned, 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      const nr = Math.max(0, Math.min(255, Math.floor(r * factor)));
+      const ng = Math.max(0, Math.min(255, Math.floor(g * factor)));
+      const nb = Math.max(0, Math.min(255, Math.floor(b * factor)));
+      const toHex = (n: number) => n.toString(16).padStart(2, '0');
+      return `#${toHex(nr)}${toHex(ng)}${toHex(nb)}`;
+    } catch {
+      return hex;
+    }
+  }, []);
+  const softColor = useMemo(() => darkenColor(baseColor, 0.5), [baseColor, darkenColor]);
+
   const SIDE_MARGIN = Math.floor(screenWidth * 0.05);
 
   const entryOpacity = useRef(new Animated.Value(0)).current;
@@ -129,8 +147,8 @@ export default function AlbumScreen() {
   return (
     <Animated.View style={[styles.root, { opacity: entryOpacity }]} testID="album-screen-root">
       <LinearGradient
-        colors={[baseColor, '#000000', '#000000']}
-        locations={[0, 0.5, 1]}
+        colors={[softColor, softColor, '#000000']}
+        locations={[0, 0.02, 1]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
         style={StyleSheet.absoluteFill}
