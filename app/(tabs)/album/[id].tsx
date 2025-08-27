@@ -239,7 +239,7 @@ export default function AlbumScreen() {
                   testID={`track-row-${idx+1}`}
                 >
                   {isActive ? (
-                    <View pointerEvents="none" style={{ position: 'absolute', left: -SIDE_MARGIN, right: -SIDE_MARGIN, top: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.05)' }} />
+                    <View pointerEvents="none" style={styles.rowHighlight} />
                   ) : null}
                   <View style={{ flex: 1, paddingHorizontal: SIDE_MARGIN + 16 }}>
                     <Text style={[styles.rowTitle, isActive ? { color: baseColor } : null]} numberOfLines={1}>{t.title}</Text>
@@ -266,7 +266,8 @@ const styles = StyleSheet.create({
   ctaFlex: { flex: 1 },
   ctaTextWithIcon: { marginLeft: 8 },
   listDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.06)', marginTop: 18, marginBottom: 8 },
-  row: { paddingHorizontal: 0, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(255,255,255,0.06)', flexDirection: 'row', alignItems: 'center' },
+  row: { paddingHorizontal: 0, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(255,255,255,0.06)', flexDirection: 'row', alignItems: 'center', position: 'relative' },
+  rowHighlight: { position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.05)' },
   rowTitle: { color: '#fff', fontSize: 16, fontWeight: '500' as const },
   rowSubtitle: { color: '#94a3b8', fontSize: 12, marginTop: 2 },
 });
