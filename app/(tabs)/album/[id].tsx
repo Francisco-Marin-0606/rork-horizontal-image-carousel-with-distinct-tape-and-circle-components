@@ -160,6 +160,8 @@ export default function AlbumScreen() {
 
   const tracks = useMemo<AlbumData[]>(() => (album ? inventedTracks(album) : []), [album]);
 
+  const [downloadedMap, setDownloadedMap] = React.useState<Record<string, boolean>>({});
+
   const imageBase = Math.min(320, Math.floor(screenWidth * 0.68));
   const imageSize = Math.floor(imageBase * 0.72);
   const coverOffset = Math.max(6, Math.floor(screenWidth * 0.09));
@@ -352,6 +354,7 @@ export default function AlbumScreen() {
               {tracks.map((t, idx) => {
                 const isCurrent = current?.id === t.id;
                 const isActive = Boolean(isCurrent);
+                const downloaded = downloadedMap[t.id] ?? false;
                 return (
                   <TouchableOpacity
                     key={t.id}
@@ -378,12 +381,25 @@ export default function AlbumScreen() {
                     </View>
                     <TouchableOpacity
                       accessibilityRole="button"
+                      accessibilityLabel={downloaded ? 'Descargado' : 'Descargar pista'}
                       style={{ padding: 8, marginLeft: 12 }}
                       hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
                       testID={`btn-download-track-${idx+1}`}
-                      disabled={true}
+                      onPress={async () => {
+                        try { console.log('[download] toggle track', t.id); } catch {}
+                        await hapticSelection();
+                        setDownloadedMap(prev => ({ ...prev, [t.id]: !prev[t.id] }));
+                      }}
                     >
-                      <Download color="#e5e7eb" size={20} />
+                      {downloaded ? (
+                        <Image
+                          source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/Descargado.png' }}
+                          style={{ width: 20, height: 20 }}
+                          resizeMode="contain"
+                        />
+                      ) : (
+                        <Download color="#e5e7eb" size={20} />
+                      )}
                     </TouchableOpacity>
                   </TouchableOpacity>
                 );
