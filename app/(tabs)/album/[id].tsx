@@ -90,9 +90,6 @@ export default function AlbumScreen() {
 
   const imageBase = Math.min(320, Math.floor(screenWidth * 0.68));
   const imageSize = Math.floor(imageBase * 0.72);
-  const vinylSize = Math.floor(imageSize * 0.7);
-  const vinylLeft = Math.floor(imageSize - vinylSize / 2);
-  const vinylTop = Math.floor((imageSize - vinylSize) / 2);
 
   const spin = useRef(new Animated.Value(0)).current;
   const getBaseId = (id?: string | null) => (id ? String(id).split('-')[0] : '');
@@ -174,14 +171,14 @@ export default function AlbumScreen() {
                 <Image source={{ uri: getCoverUrlById(album.id) }} style={{ width: imageSize, height: imageSize }} resizeMode="cover" />
                 <Svg width={imageSize} height={imageSize} style={{ position: 'absolute', left: 0, top: 0 }} testID="cover-radial-overlay">
                   <Defs>
-                    <RNSRadialGradient id="coverRadial" cx={vinylLeft + vinylSize / 2} cy={vinylTop + vinylSize / 2} r={vinylSize / 2} gradientUnits="userSpaceOnUse">
+                    <RNSRadialGradient id="coverRadial" cx={imageSize / 2} cy={imageSize / 2} r={imageSize * 0.5} gradientUnits="userSpaceOnUse">
                       <Stop offset={0} stopColor="#000000" stopOpacity={1} />
                       <Stop offset={1} stopColor="#000000" stopOpacity={0} />
                     </RNSRadialGradient>
                   </Defs>
-                  <Circle cx={vinylLeft + vinylSize / 2} cy={vinylTop + vinylSize / 2} r={vinylSize / 2} fill="url(#coverRadial)" />
+                  <Circle cx={imageSize / 2} cy={imageSize / 2} r={imageSize * 0.5} fill="url(#coverRadial)" />
                 </Svg>
-                <Animated.Image source={{ uri: getVinylUrlById(album.id) }} style={{ position: 'absolute', width: vinylSize, height: vinylSize, left: vinylLeft, top: vinylTop, transform: [{ rotate }] }} resizeMode="contain" />
+                <Animated.Image source={{ uri: getVinylUrlById(album.id) }} style={{ position: 'absolute', width: Math.floor(imageSize * 0.7), height: Math.floor(imageSize * 0.7), left: Math.floor(imageSize - (imageSize*0.7)/2), top: Math.floor((imageSize - (imageSize*0.7))/2), transform: [{ rotate }] }} resizeMode="contain" />
               </View>
               <Text style={styles.title} numberOfLines={2} testID="album-title">{album.title}</Text>
               <Text style={styles.subtitle} numberOfLines={1}>{'18 Hz - Ondas Beta'}</Text>
