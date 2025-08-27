@@ -174,7 +174,7 @@ export default function AlbumScreen() {
               </View>
               <Text style={styles.title} numberOfLines={2} testID="album-title">{album.title}</Text>
               <Text style={styles.subtitle} numberOfLines={1}>{'18 Hz - Ondas Beta'}</Text>
-              <View style={[styles.ctaRow, { paddingHorizontal: Math.floor(screenWidth * 0.05) }]}>
+              <View style={[styles.ctaRow, { paddingHorizontal: Math.floor(screenWidth * 0.10) }]}>
                 <TouchableOpacity
                   testID="btn-play"
                   accessibilityRole="button"
