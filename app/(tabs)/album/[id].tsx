@@ -227,7 +227,6 @@ export default function AlbumScreen() {
                   style={[
                     styles.row,
                     { marginLeft: -SIDE_MARGIN, marginRight: -SIDE_MARGIN, paddingLeft: 16 + SIDE_MARGIN, paddingRight: 16 + SIDE_MARGIN },
-                    isActive ? { backgroundColor: 'rgba(255,255,255,0.05)' } : null as any,
                   ]}
                   activeOpacity={0.8}
                   onPress={async () => {
@@ -239,6 +238,9 @@ export default function AlbumScreen() {
                   }}
                   testID={`track-row-${idx+1}`}
                 >
+                  {isActive ? (
+                    <View pointerEvents="none" style={{ position: 'absolute', left: -SIDE_MARGIN, right: -SIDE_MARGIN, top: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.05)' }} />
+                  ) : null}
                   <View style={{ flex: 1 }}>
                     <Text style={[styles.rowTitle, isActive ? { color: baseColor } : null]} numberOfLines={1}>{t.title}</Text>
                     <Text style={[styles.rowSubtitle, isActive ? { color: '#cbd5e1' } : null]} numberOfLines={1}>{t.subtitle}</Text>
