@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView, Animated, Easing, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePlayer } from '@/providers/PlayerProvider';
 import type { AlbumData } from '@/types/music';
@@ -162,11 +162,6 @@ export default function AlbumScreen() {
 
   return (
     <Animated.View style={[styles.root, { opacity: entryOpacity, transform: [{ translateX: entryTranslateX }] }]} testID="album-screen-root">
-      <Stack.Screen options={{
-        headerShown: false,
-        animation: 'slide_from_right',
-        contentStyle: { backgroundColor: '#000' },
-      }} />
       <LinearGradient
         colors={[softColor, softColor, '#000000']}
         locations={[0, 0.02, 1]}
@@ -174,7 +169,7 @@ export default function AlbumScreen() {
         end={{ x: 0, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }}>
+      <SafeAreaView style={{ flex: 1 }}>
         {isSkeleton ? (
           <View style={{ flex: 1 }} testID="album-skeleton">
             <View style={[styles.headerRow, { paddingHorizontal: Math.floor(screenWidth * 0.08) }]}>
