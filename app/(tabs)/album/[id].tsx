@@ -66,6 +66,15 @@ export default function AlbumScreen() {
   const colorParam = (Array.isArray(params.color) ? params.color[0] : (params.color as string)) ?? undefined;
   const audioUrlParam = (Array.isArray(params.audioUrl) ? params.audioUrl[0] : (params.audioUrl as string)) ?? undefined;
   const { queue, select, current, isPlaying, play, setQueue, setUIOpen } = usePlayer();
+  const [isSkeleton, setIsSkeleton] = React.useState<boolean>(true);
+  React.useEffect(() => {
+    try { console.log('[album] force skeleton start'); } catch {}
+    const t = setTimeout(() => {
+      try { console.log('[album] force skeleton end'); } catch {}
+      setIsSkeleton(false);
+    }, 2000);
+    return () => clearTimeout(t);
+  }, []);
 
   const albumFromParams = useMemo<AlbumData | null>(() => {
     if (!idParam) return null;
@@ -156,102 +165,130 @@ export default function AlbumScreen() {
         style={StyleSheet.absoluteFill}
       />
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flex: 1, paddingLeft: SIDE_MARGIN, paddingRight: SIDE_MARGIN }}>
-          <View style={[styles.headerRow, { paddingHorizontal: Math.floor(screenWidth * 0.08) }]}>
-            <TouchableOpacity accessibilityRole="button" testID="btn-back" style={{ padding: 8 }} onPress={async () => { await hapticSelection(); router.back(); }}>
-              <Image
-                source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/FlechaRetrocederV2.png' }}
-                style={{ width: 22, height: 22 }}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
-          </View>
-          <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
-            <View style={{ alignItems: 'center', marginTop: 12 }}>
-              <View style={{ width: imageSize, height: imageSize, marginLeft: -coverOffset }} testID="album-cover-container">
-                <Animated.Image source={{ uri: getVinylUrlById(album.id) }} style={{ position: 'absolute', width: Math.floor(imageSize * 0.7), height: Math.floor(imageSize * 0.7), left: Math.floor(imageSize - (imageSize*0.7)/2), top: Math.floor((imageSize - (imageSize*0.7))/2), transform: [{ rotate }] }} resizeMode="contain" />
-                <Image source={{ uri: getCoverUrlById(album.id) }} style={{ width: imageSize, height: imageSize }} resizeMode="cover" />
-              </View>
-              <Text style={styles.title} numberOfLines={2} testID="album-title">{album.title}</Text>
-              <Text style={styles.subtitle} numberOfLines={1}>{'18 Hz - Ondas Beta'}</Text>
-              <View style={[styles.ctaRow, { paddingHorizontal: Math.floor(screenWidth * 0.08) }]}>
-                <TouchableOpacity
-                  testID="btn-play"
-                  accessibilityRole="button"
-                  accessibilityLabel="Reproducir"
-                  style={[styles.ctaBtn, styles.ctaFlex, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
-                  onPress={async () => {
-                    try { console.log('[album] Play button pressed'); } catch {}
-                    await hapticImpact('medium');
-                    if (tracks.length > 0) {
-                      setQueue(tracks);
-                      await select(tracks[0], { forceAutoplay: true });
-                      await play();
-                    }
-                  }}
-                >
-                  {PLAY_ICON_URL ? (
-                    <Image source={{ uri: PLAY_ICON_URL }} style={{ width: 20, height: 20, tintColor: '#e5e7eb' as const }} />
-                  ) : (
-                    <Play color="#e5e7eb" size={20} />
-                  )}
-                  <Text style={[styles.ctaText, styles.ctaTextWithIcon]}>Reproducir</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  testID="btn-shuffle"
-                  accessibilityRole="button"
-                  accessibilityLabel="Aleatorio"
-                  style={[styles.ctaBtn, styles.ctaFlex, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
-                  onPress={async () => {
-                    try { console.log('[album] Shuffle button pressed'); } catch {}
-                    await hapticImpact('light');
-                    if (tracks.length > 0) {
-                      const anyTrack = tracks[Math.floor(Math.random() * tracks.length)];
-                      setQueue(tracks);
-                      await select(anyTrack, { forceAutoplay: true });
-                      await play();
-                    }
-                  }}
-                >
-                  <Shuffle color="#e5e7eb" size={20} />
-                  <Text style={[styles.ctaText, styles.ctaTextWithIcon]}>Aleatorio</Text>
-                </TouchableOpacity>
-              </View>
+        {isSkeleton ? (
+          <View style={{ flex: 1 }} testID="album-skeleton">
+            <View style={[styles.headerRow, { paddingHorizontal: Math.floor(screenWidth * 0.08) }]}>
+              <View style={styles.skelCircle} />
             </View>
-
-            <View style={styles.listDivider} />
-            {tracks.map((t, idx) => {
-              const isCurrent = current?.id === t.id;
-              const isActive = Boolean(isCurrent);
-              return (
-                <TouchableOpacity
-                  key={t.id}
-                  style={[
-                    styles.row,
-                    { marginLeft: -SIDE_MARGIN, marginRight: -SIDE_MARGIN, paddingLeft: 16 + SIDE_MARGIN, paddingRight: 16 + SIDE_MARGIN },
-                  ]}
-                  activeOpacity={0.8}
-                  onPress={async () => {
-                    await hapticSelection();
-                    try { console.log('[album] Track tapped', t.id); } catch {}
-                    setQueue(tracks);
-                    await select(t, { forceAutoplay: true });
-                    await play();
-                  }}
-                  testID={`track-row-${idx+1}`}
-                >
-                  {isActive ? (
-                    <View pointerEvents="none" style={{ position: 'absolute', left: -SIDE_MARGIN, right: -SIDE_MARGIN, top: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.05)' }} />
-                  ) : null}
+            <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+              <View style={{ alignItems: 'center', marginTop: 12 }}>
+                <View style={{ width: imageSize, height: imageSize, marginLeft: -coverOffset, backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: 8 }} />
+                <View style={[styles.skelLine, { width: Math.floor(screenWidth * 0.6), marginTop: 16 }]} />
+                <View style={[styles.skelLine, { width: Math.floor(screenWidth * 0.4), height: 14, marginTop: 8 }]} />
+                <View style={[styles.ctaRow, { paddingHorizontal: Math.floor(screenWidth * 0.08) }]}>
+                  <View style={[styles.skelBtn]} />
+                  <View style={[styles.skelBtn]} />
+                </View>
+              </View>
+              <View style={styles.listDivider} />
+              {Array.from({ length: 8 }).map((_, i) => (
+                <View key={`skel-${i}`} style={[styles.row, { marginLeft: -SIDE_MARGIN, marginRight: -SIDE_MARGIN, paddingLeft: 16 + SIDE_MARGIN, paddingRight: 16 + SIDE_MARGIN }]}> 
                   <View style={{ flex: 1, paddingLeft: TEXT_SHIFT }}>
-                    <Text style={[styles.rowTitle, isActive ? { color: baseColor } : null]} numberOfLines={1}>{t.title}</Text>
-                    <Text style={[styles.rowSubtitle, isActive ? { color: '#cbd5e1' } : null]} numberOfLines={1}>{t.subtitle}</Text>
+                    <View style={[styles.skelLine, { width: Math.floor(screenWidth * 0.5) }]} />
+                    <View style={[styles.skelLine, { width: Math.floor(screenWidth * 0.35), height: 12, marginTop: 8, opacity: 0.6 }]} />
                   </View>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-        </View>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        ) : (
+          <View style={{ flex: 1, paddingLeft: SIDE_MARGIN, paddingRight: SIDE_MARGIN }}>
+            <View style={[styles.headerRow, { paddingHorizontal: Math.floor(screenWidth * 0.08) }]}>
+              <TouchableOpacity accessibilityRole="button" testID="btn-back" style={{ padding: 8 }} onPress={async () => { await hapticSelection(); router.back(); }}>
+                <Image
+                  source={{ uri: 'https://mental-app-images.nyc3.cdn.digitaloceanspaces.com/Mental%20%7C%20Aura_v2/FlechaRetrocederV2.png' }}
+                  style={{ width: 22, height: 22 }}
+                  resizeMode="contain"
+                />
+              </TouchableOpacity>
+            </View>
+            <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
+              <View style={{ alignItems: 'center', marginTop: 12 }}>
+                <View style={{ width: imageSize, height: imageSize, marginLeft: -coverOffset }} testID="album-cover-container">
+                  <Animated.Image source={{ uri: getVinylUrlById(album.id) }} style={{ position: 'absolute', width: Math.floor(imageSize * 0.7), height: Math.floor(imageSize * 0.7), left: Math.floor(imageSize - (imageSize*0.7)/2), top: Math.floor((imageSize - (imageSize*0.7))/2), transform: [{ rotate }] }} resizeMode="contain" />
+                  <Image source={{ uri: getCoverUrlById(album.id) }} style={{ width: imageSize, height: imageSize }} resizeMode="cover" />
+                </View>
+                <Text style={styles.title} numberOfLines={2} testID="album-title">{album.title}</Text>
+                <Text style={styles.subtitle} numberOfLines={1}>{'18 Hz - Ondas Beta'}</Text>
+                <View style={[styles.ctaRow, { paddingHorizontal: Math.floor(screenWidth * 0.08) }]}>
+                  <TouchableOpacity
+                    testID="btn-play"
+                    accessibilityRole="button"
+                    accessibilityLabel="Reproducir"
+                    style={[styles.ctaBtn, styles.ctaFlex, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
+                    onPress={async () => {
+                      try { console.log('[album] Play button pressed'); } catch {}
+                      await hapticImpact('medium');
+                      if (tracks.length > 0) {
+                        setQueue(tracks);
+                        await select(tracks[0], { forceAutoplay: true });
+                        await play();
+                      }
+                    }}
+                  >
+                    {PLAY_ICON_URL ? (
+                      <Image source={{ uri: PLAY_ICON_URL }} style={{ width: 20, height: 20, tintColor: '#e5e7eb' as const }} />
+                    ) : (
+                      <Play color="#e5e7eb" size={20} />
+                    )}
+                    <Text style={[styles.ctaText, styles.ctaTextWithIcon]}>Reproducir</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    testID="btn-shuffle"
+                    accessibilityRole="button"
+                    accessibilityLabel="Aleatorio"
+                    style={[styles.ctaBtn, styles.ctaFlex, { backgroundColor: 'rgba(255,255,255,0.12)' }]}
+                    onPress={async () => {
+                      try { console.log('[album] Shuffle button pressed'); } catch {}
+                      await hapticImpact('light');
+                      if (tracks.length > 0) {
+                        const anyTrack = tracks[Math.floor(Math.random() * tracks.length)];
+                        setQueue(tracks);
+                        await select(anyTrack, { forceAutoplay: true });
+                        await play();
+                      }
+                    }}
+                  >
+                    <Shuffle color="#e5e7eb" size={20} />
+                    <Text style={[styles.ctaText, styles.ctaTextWithIcon]}>Aleatorio</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <View style={styles.listDivider} />
+              {tracks.map((t, idx) => {
+                const isCurrent = current?.id === t.id;
+                const isActive = Boolean(isCurrent);
+                return (
+                  <TouchableOpacity
+                    key={t.id}
+                    style={[
+                      styles.row,
+                      { marginLeft: -SIDE_MARGIN, marginRight: -SIDE_MARGIN, paddingLeft: 16 + SIDE_MARGIN, paddingRight: 16 + SIDE_MARGIN },
+                    ]}
+                    activeOpacity={0.8}
+                    onPress={async () => {
+                      await hapticSelection();
+                      try { console.log('[album] Track tapped', t.id); } catch {}
+                      setQueue(tracks);
+                      await select(t, { forceAutoplay: true });
+                      await play();
+                    }}
+                    testID={`track-row-${idx+1}`}
+                  >
+                    {isActive ? (
+                      <View pointerEvents="none" style={{ position: 'absolute', left: -SIDE_MARGIN, right: -SIDE_MARGIN, top: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.05)' }} />
+                    ) : null}
+                    <View style={{ flex: 1, paddingLeft: TEXT_SHIFT }}>
+                      <Text style={[styles.rowTitle, isActive ? { color: baseColor } : null]} numberOfLines={1}>{t.title}</Text>
+                      <Text style={[styles.rowSubtitle, isActive ? { color: '#cbd5e1' } : null]} numberOfLines={1}>{t.subtitle}</Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        )}
       </SafeAreaView>
     </Animated.View>
   );
@@ -271,4 +308,7 @@ const styles = StyleSheet.create({
   row: { paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: 'rgba(255,255,255,0.06)', flexDirection: 'row', alignItems: 'center' },
   rowTitle: { color: '#fff', fontSize: 16, fontWeight: '500' as const },
   rowSubtitle: { color: '#94a3b8', fontSize: 12, marginTop: 2 },
+  skelCircle: { width: 22, height: 22, borderRadius: 11, backgroundColor: 'rgba(255,255,255,0.12)' },
+  skelLine: { height: 18, borderRadius: 6, backgroundColor: 'rgba(255,255,255,0.12)' },
+  skelBtn: { height: 42, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.12)', flex: 1 },
 });
