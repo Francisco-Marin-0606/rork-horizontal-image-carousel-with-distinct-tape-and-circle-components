@@ -191,11 +191,12 @@ const AlbumCard: React.FC<AlbumCardProps> = React.memo(({ album, imageSize, onPr
   );
 });
 
-const CarouselSection: React.FC<{ title: string; data: AlbumData[]; imageSize: number; onSelect: (a: AlbumData) => void; topSpacing?: number; bottomSpacing?: number }> = ({ title, data, imageSize, onSelect, topSpacing, bottomSpacing }) => {
+const CarouselSection: React.FC<{ title: string; data: AlbumData[]; imageSize: number; onSelect: (a: AlbumData) => void; topSpacing?: number; bottomSpacing?: number; loading?: boolean }> = ({ title, data, imageSize, onSelect, topSpacing, bottomSpacing, loading = false }) => {
   const snapOffsets = useMemo(() => {
     const offsets = data.map((_, i) => i * (CARD_WIDTH + ITEM_SPACING));
     return offsets;
   }, [data]);
+  const placeholderCount = Math.max(3, Math.min(6, data.length || 5));
   return (
     <View style={[styles.section, topSpacing ? { marginTop: topSpacing } : null, bottomSpacing != null ? { marginBottom: bottomSpacing } : null]}>
       {title && title.trim().length > 0 ? (
@@ -213,14 +214,23 @@ const CarouselSection: React.FC<{ title: string; data: AlbumData[]; imageSize: n
         overScrollMode={Platform.OS === 'android' ? 'always' : 'never'}
         testID={`carousel-${title}`}
       >
-        {data.map((album, i) => {
-          const isLast = i === data.length - 1;
-          return (
-            <View key={album.id} style={{ width: CARD_WIDTH, marginRight: isLast ? 0 : ITEM_SPACING }} testID={`carousel-item-${title}-${album.id}`}>
-              <AlbumCard album={album} imageSize={imageSize} onPress={onSelect} />
-            </View>
-          );
-        })}
+        {loading
+          ? Array.from({ length: placeholderCount }).map((_, i) => {
+              const isLast = i === placeholderCount - 1;
+              return (
+                <View key={`sk-${i}`} style={{ width: CARD_WIDTH, marginRight: isLast ? 0 : ITEM_SPACING }} testID={`carousel-skeleton-${title}-${i}`}>
+                  <SkeletonCard imageSize={imageSize} />
+                </View>
+              );
+            })
+          : data.map((album, i) => {
+              const isLast = i === data.length - 1;
+              return (
+                <View key={album.id} style={{ width: CARD_WIDTH, marginRight: isLast ? 0 : ITEM_SPACING }} testID={`carousel-item-${title}-${album.id}`}>
+                  <AlbumCard album={album} imageSize={imageSize} onPress={onSelect} />
+                </View>
+              );
+            })}
       </ScrollView>
     </View>
   );
@@ -665,6 +675,28 @@ function PlayerSheet({ visible, onClose, album, imageSize, contentOpacity }: { v
   ) : null;
 }
 
+const SkeletonCard: React.FC<{ imageSize: number }> = ({ imageSize }) => {
+  const pulse = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, { toValue: 1, duration: 700, easing: Easing.inOut(Easing.quad), useNativeDriver: false }),
+        Animated.timing(pulse, { toValue: 0, duration: 700, easing: Easing.inOut(Easing.quad), useNativeDriver: false }),
+      ])
+    );
+    loop.start();
+    return () => { try { loop.stop(); } catch {} };
+  }, [pulse]);
+  const bg = pulse.interpolate({ inputRange: [0, 1], outputRange: ['#1F2937', '#111827'] });
+  return (
+    <View style={{ width: '100%' }}>
+      <Animated.View style={{ width: imageSize, height: imageSize, backgroundColor: bg }} testID="skeleton-image" />
+      <Animated.View style={{ width: Math.floor(imageSize * 0.8), height: 18, backgroundColor: bg, marginTop: 10, borderRadius: 4 }} testID="skeleton-title" />
+      <Animated.View style={{ width: Math.floor(imageSize * 0.6), height: 14, backgroundColor: bg, marginTop: 6, borderRadius: 4 }} testID="skeleton-subtitle" />
+    </View>
+  );
+};
+
 export default function MusicPlayerScreen() {
   const router = useRouter();
   const [contentHeight, setContentHeight] = useState<number>(Math.max(screenHeight - 160, 400));
@@ -726,6 +758,13 @@ export default function MusicPlayerScreen() {
     });
   }, [router, contentOpacity]);
 
+  const [loading, setLoading] = useState<boolean>(true);
+  useEffect(() => {
+    try { console.log('[ux] forcing skeleton for 2s on carousels'); } catch {}
+    const t = setTimeout(() => setLoading(false), 2000);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.animatedContentWrapper, { opacity: contentOpacity }]} testID="content-fade-wrapper">
@@ -740,9 +779,9 @@ export default function MusicPlayerScreen() {
             showsVerticalScrollIndicator={false}
             testID="vertical-scroll"
           >
-            <CarouselSection title="Para ti" data={forYouData} imageSize={imageSize} topSpacing={16} onSelect={async (a) => { await hapticSelection(); handleSelect(a); }} />
-            <CarouselSection title="Instrumentales" data={instrumentalData} imageSize={imageSize} bottomSpacing={24} onSelect={async (a) => { await hapticSelection(); navigateToAlbumWithFade(a); }} />
-            <CarouselSection title="" data={extraData} imageSize={imageSize} onSelect={async (a) => { await hapticSelection(); navigateToAlbumWithFade(a); }} />
+            <CarouselSection title="Para ti" data={forYouData} imageSize={imageSize} topSpacing={16} loading={loading} onSelect={async (a) => { await hapticSelection(); handleSelect(a); }} />
+            <CarouselSection title="Instrumentales" data={instrumentalData} imageSize={imageSize} bottomSpacing={24} loading={loading} onSelect={async (a) => { await hapticSelection(); navigateToAlbumWithFade(a); }} />
+            <CarouselSection title="" data={extraData} imageSize={imageSize} loading={loading} onSelect={async (a) => { await hapticSelection(); navigateToAlbumWithFade(a); }} />
           </ScrollView>
         </SafeAreaView>
       </Animated.View>
