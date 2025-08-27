@@ -98,7 +98,7 @@ export default function AlbumScreen() {
 
   const imageBase = Math.min(320, Math.floor(screenWidth * 0.68));
   const imageSize = Math.floor(imageBase * 0.72);
-  const coverOffset = Math.max(6, Math.floor(screenWidth * 0.04));
+  const coverOffset = Math.max(6, Math.floor(screenWidth * 0.09));
   const TEXT_SHIFT = Math.floor(screenWidth * 0.05);
 
   const spin = useRef(new Animated.Value(0)).current;
